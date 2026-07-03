@@ -1,0 +1,39 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { buildMateriaBimestreTree } from '../../lib/slug';
+
+const entries = await getCollection('escolar');
+const tree = buildMateriaBimestreTree(entries);
+const materias = [...tree.values()].sort((a, b) => a.label.localeCompare(b.label));
+---
+
+<Base title="Escolar" active="escolar" description="Conteúdo de sala de aula, por matéria">
+  <p class="font-mono text-xs uppercase tracking-widest mb-2" style="color: var(--color-escolar)">escolar</p>
+  <h1 class="font-display text-3xl md:text-4xl font-bold text-ink mb-3">Matérias</h1>
+  <p class="font-body text-ink-soft max-w-lg mb-10 leading-relaxed">
+    O conteúdo normal de sala de aula, organizado do jeito que ele acontece no ano: por matéria,
+    depois por bimestre, depois por semana.
+  </p>
+
+  {materias.length === 0 ? (
+    <p class="font-body text-ink-soft">Nenhuma matéria publicada ainda.</p>
+  ) : (
+    <ul class="grid sm:grid-cols-2 gap-4 list-none p-0 m-0">
+      {materias.map((m) => (
+        <li>
+          <a
+            href={`/escolar/${m.slug}/`}
+            class="block rounded-lg border-2 p-5 hover:-translate-y-0.5 transition-transform"
+            style="border-color: var(--color-escolar); background-color: var(--color-escolar-soft);"
+          >
+            <h2 class="font-display text-xl font-bold text-ink mb-1">{m.label}</h2>
+            <p class="font-mono text-xs text-ink-soft">
+              {m.bimestres.size} {m.bimestres.size === 1 ? 'bimestre' : 'bimestres'}
+            </p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</Base>

@@ -1,0 +1,46 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { splitSlug } from '../../../lib/slug';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('enem');
+  const byMateria = new Map<string, typeof entries>();
+  for (const e of entries) {
+    const [materiaSlug] = splitSlug(e.id);
+    if (!byMateria.has(materiaSlug)) byMateria.set(materiaSlug, []);
+    byMateria.get(materiaSlug)!.push(e);
+  }
+  return [...byMateria.entries()].map(([materiaSlug, temas]) => ({
+    params: { materia: materiaSlug },
+    props: { temas: temas.sort((a, b) => a.data.order - b.data.order) },
+  }));
+}
+
+const { materia } = Astro.params;
+const { temas } = Astro.props;
+const subjectLabel = temas[0]?.data.subject ?? materia;
+---
+
+<Base title={subjectLabel} active="enem" description={`Temas de ${subjectLabel} para o ENEM`}>
+  <nav class="font-mono text-xs text-ink-soft mb-4">
+    <a href="/enem" class="hover:text-ink underline underline-offset-2">ENEM</a>
+    <span> / </span>
+    <span class="text-ink">{subjectLabel}</span>
+  </nav>
+  <h1 class="font-display text-3xl md:text-4xl font-bold text-ink mb-8">{subjectLabel}</h1>
+
+  <ul class="flex flex-col gap-3 list-none p-0 m-0">
+    {temas.map((t) => (
+      <li>
+        <a
+          href={`/enem/${materia}/${splitSlug(t.id)[1]}/`}
+          class="flex items-center justify-between gap-4 rounded-md border border-paper-dark px-5 py-4 hover:border-enem transition-colors bg-white/50"
+        >
+          <span class="font-body text-ink font-medium">{t.data.title}</span>
+          <span class="font-mono text-xs text-ink-soft shrink-0">5 questões →</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</Base>

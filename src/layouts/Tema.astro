@@ -1,0 +1,53 @@
+---
+import Base from './Base.astro';
+import Quiz from '../components/Quiz.jsx';
+
+interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  title: string;
+  subject: string;
+  relevance: string;
+  questions: any[];
+  active: 'enem' | 'escolar' | 'ds';
+  breadcrumb: Crumb[];
+}
+const { title, subject, relevance, questions, active, breadcrumb } = Astro.props;
+---
+
+<Base title={title} active={active} description={relevance}>
+  <nav class="font-mono text-xs text-ink-soft mb-4 flex flex-wrap gap-x-1 gap-y-1">
+    {breadcrumb.map((b, i) => (
+      <Fragment>
+        {i > 0 && <span aria-hidden="true">/</span>}
+        {b.href ? (
+          <a href={b.href} class="hover:text-ink underline underline-offset-2">{b.label}</a>
+        ) : (
+          <span class="text-ink">{b.label}</span>
+        )}
+      </Fragment>
+    ))}
+  </nav>
+
+  <p class="font-mono text-xs uppercase tracking-widest mb-2" style={`color: var(--color-${active})`}>
+    {subject}
+  </p>
+  <h1 class="font-display text-3xl md:text-4xl font-bold text-ink mb-6 leading-tight">
+    {title}
+  </h1>
+
+  <section class="mb-10 border-l-4 pl-5" style={`border-color: var(--color-${active})`}>
+    <p class="font-mono text-[11px] uppercase tracking-wide text-ink-soft mb-2">
+      Visão Geral e Relevância
+    </p>
+    <p class="font-body text-ink leading-relaxed">{relevance}</p>
+  </section>
+
+  <article class="prose prose-tema max-w-none">
+    <slot />
+  </article>
+
+  <Quiz questions={questions} accent={active} client:visible />
+</Base>

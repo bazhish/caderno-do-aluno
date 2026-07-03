@@ -1,0 +1,36 @@
+---
+import Tema from '../../../layouts/Tema.astro';
+import { getCollection, render } from 'astro:content';
+import { splitSlug } from '../../../lib/slug';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('enem');
+  return entries.map((e) => {
+    const [materiaSlug, temaSlug] = splitSlug(e.id);
+    return {
+      params: { materia: materiaSlug, tema: temaSlug },
+      props: { entry: e },
+    };
+  });
+}
+
+const { materia } = Astro.params;
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const subjectLabel = entry.data.subject;
+---
+
+<Tema
+  title={entry.data.title}
+  subject={subjectLabel}
+  relevance={entry.data.relevance}
+  questions={entry.data.questions}
+  active="enem"
+  breadcrumb={[
+    { label: 'ENEM', href: '/enem' },
+    { label: subjectLabel, href: `/enem/${materia}/` },
+    { label: entry.data.title },
+  ]}
+>
+  <Content />
+</Tema>

@@ -1,0 +1,54 @@
+---
+interface Props {
+  active?: 'enem' | 'escolar' | 'ds' | null;
+}
+const { active = null } = Astro.props;
+
+const tabs = [
+  { key: 'enem', label: 'ENEM', href: '/enem', color: 'var(--color-enem)', soft: 'var(--color-enem-soft)' },
+  { key: 'escolar', label: 'Escolar', href: '/escolar', color: 'var(--color-escolar)', soft: 'var(--color-escolar-soft)' },
+  { key: 'ds', label: 'DS', href: '/ds', color: 'var(--color-ds)', soft: 'var(--color-ds-soft)' },
+];
+---
+
+<nav class="flex gap-2 px-4 md:px-10" aria-label="Categorias">
+  {tabs.map((tab, i) => {
+    const isActive = active === tab.key;
+    return (
+      <a
+        href={tab.href}
+        class="tab font-display font-bold text-sm md:text-base uppercase tracking-wide px-5 md:px-7 py-3 rounded-t-lg border-2 border-b-0 transition-all"
+        style={`
+          --tab-color: ${tab.color};
+          --tab-soft: ${tab.soft};
+          margin-top: ${isActive ? '0px' : '10px'};
+          z-index: ${isActive ? 10 : i};
+        `}
+        data-active={isActive}
+      >
+        {tab.label}
+      </a>
+    );
+  })}
+</nav>
+
+<style>
+  .tab {
+    color: var(--tab-color);
+    border-color: var(--tab-color);
+    background: var(--color-paper);
+    opacity: 0.6;
+  }
+  .tab:hover {
+    opacity: 0.9;
+    margin-top: 4px !important;
+  }
+  .tab[data-active='true'] {
+    opacity: 1;
+    background: var(--color-paper);
+    box-shadow: 0 -2px 0 0 var(--color-paper);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tab { transition: none; }
+  }
+</style>

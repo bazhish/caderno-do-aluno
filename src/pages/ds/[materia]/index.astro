@@ -1,0 +1,43 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { buildMateriaBimestreTree } from '../../../lib/slug';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('ds');
+  const tree = buildMateriaBimestreTree(entries);
+  return [...tree.entries()].map(([materiaSlug, materia]) => ({
+    params: { materia: materiaSlug },
+    props: { materia },
+  }));
+}
+
+const { materia: materiaSlug } = Astro.params;
+const { materia } = Astro.props;
+const bimestres = [...materia.bimestres.values()].sort((a, b) => a.slug.localeCompare(b.slug));
+---
+
+<Base title={materia.label} active="ds" description={`Bimestres de ${materia.label}`}>
+  <nav class="font-mono text-xs text-ink-soft mb-4">
+    <a href="/ds" class="hover:text-ink underline underline-offset-2">DS</a>
+    <span> / </span>
+    <span class="text-ink">{materia.label}</span>
+  </nav>
+  <h1 class="font-display text-3xl md:text-4xl font-bold text-ink mb-8">{materia.label}</h1>
+
+  <ul class="flex flex-col gap-3 list-none p-0 m-0">
+    {bimestres.map((b) => (
+      <li>
+        <a
+          href={`/ds/${materiaSlug}/${b.slug}/`}
+          class="flex items-center justify-between gap-4 rounded-md border border-paper-dark px-5 py-4 hover:border-ds transition-colors bg-white/50"
+        >
+          <span class="font-body text-ink font-medium">{b.label}</span>
+          <span class="font-mono text-xs text-ink-soft shrink-0">
+            {b.semanas.length} {b.semanas.length === 1 ? 'semana' : 'semanas'} →
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</Base>

@@ -1,0 +1,73 @@
+---
+import Base from '../layouts/Base.astro';
+
+const categories = [
+  {
+    href: '/enem',
+    key: 'enem',
+    label: 'ENEM',
+    color: 'var(--color-enem)',
+    soft: 'var(--color-enem-soft)',
+    description:
+      'Estudo focado no conteúdo cobrado pelo INEP: teoria enxuta, pegadinhas mapeadas e questões oficiais para treinar.',
+    meta: 'por matéria',
+  },
+  {
+    href: '/escolar',
+    key: 'escolar',
+    label: 'Escolar',
+    color: 'var(--color-escolar)',
+    soft: 'var(--color-escolar-soft)',
+    description:
+      'O conteúdo passado em sala de aula, organizado por matéria, bimestre e semana — para quem faltou ou quer revisar.',
+    meta: 'por bimestre e semana',
+  },
+  {
+    href: '/ds',
+    key: 'ds',
+    label: 'DS',
+    color: 'var(--color-ds)',
+    soft: 'var(--color-ds-soft)',
+    description:
+      'Material do curso técnico, com foco em revisão e linguagem simples para ajudar todo mundo a entender.',
+    meta: 'por bimestre e semana',
+  },
+];
+---
+
+<Base title="Início" description="Hub de conteúdo de estudo compartilhado pela turma">
+  <section class="mb-12 md:mb-16">
+    <p class="font-mono text-xs uppercase tracking-widest text-ink-soft mb-3">página inicial</p>
+    <h1 class="font-display text-3xl md:text-5xl font-bold text-ink leading-tight mb-4 max-w-2xl">
+      Tudo o que a turma estuda, num lugar só.
+    </h1>
+    <p class="font-body text-ink-soft max-w-xl leading-relaxed">
+      Escolha uma aba abaixo. Cada uma organiza o conteúdo de um jeito diferente — mas toda aula
+      segue a mesma estrutura: relevância, teoria explicada com calma, resumo para o caderno e um
+      teste de 5 questões no final.
+    </p>
+  </section>
+
+  <section class="grid md:grid-cols-3 gap-5">
+    {categories.map((cat) => (
+      <a
+        href={cat.href}
+        class="group block rounded-lg border-2 p-6 transition-transform hover:-translate-y-1"
+        style={`border-color: ${cat.color}; background-color: ${cat.soft};`}
+      >
+        <p class="font-mono text-[11px] uppercase tracking-widest mb-3" style={`color: ${cat.color}`}>
+          {cat.meta}
+        </p>
+        <h2 class="font-display text-2xl font-bold text-ink mb-3">{cat.label}</h2>
+        <p class="font-body text-sm text-ink leading-relaxed mb-4">{cat.description}</p>
+        <span
+          class="font-mono text-xs font-bold uppercase tracking-wide inline-flex items-center gap-1"
+          style={`color: ${cat.color}`}
+        >
+          Entrar
+          <span class="transition-transform group-hover:translate-x-1">→</span>
+        </span>
+      </a>
+    ))}
+  </section>
+</Base>

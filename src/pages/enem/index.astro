@@ -1,0 +1,47 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { splitSlug } from '../../lib/slug';
+
+const entries = await getCollection('enem');
+
+const materiaMap = new Map<string, { slug: string; label: string; count: number }>();
+for (const e of entries) {
+  const [materiaSlug] = splitSlug(e.id);
+  if (!materiaMap.has(materiaSlug)) {
+    materiaMap.set(materiaSlug, { slug: materiaSlug, label: e.data.subject, count: 0 });
+  }
+  materiaMap.get(materiaSlug)!.count++;
+}
+const materias = [...materiaMap.values()].sort((a, b) => a.label.localeCompare(b.label));
+---
+
+<Base title="ENEM" active="enem" description="Matérias do ENEM, focadas no conteúdo do INEP">
+  <p class="font-mono text-xs uppercase tracking-widest mb-2" style="color: var(--color-enem)">enem</p>
+  <h1 class="font-display text-3xl md:text-4xl font-bold text-ink mb-3">Matérias</h1>
+  <p class="font-body text-ink-soft max-w-lg mb-10 leading-relaxed">
+    Conteúdo direto ao ponto, pensado para o que o INEP realmente cobra. Sem bimestre, sem semana —
+    só o tema e o treino.
+  </p>
+
+  {materias.length === 0 ? (
+    <p class="font-body text-ink-soft">Nenhuma matéria publicada ainda.</p>
+  ) : (
+    <ul class="grid sm:grid-cols-2 gap-4 list-none p-0 m-0">
+      {materias.map((m) => (
+        <li>
+          <a
+            href={`/enem/${m.slug}/`}
+            class="block rounded-lg border-2 p-5 hover:-translate-y-0.5 transition-transform"
+            style="border-color: var(--color-enem); background-color: var(--color-enem-soft);"
+          >
+            <h2 class="font-display text-xl font-bold text-ink mb-1">{m.label}</h2>
+            <p class="font-mono text-xs text-ink-soft">
+              {m.count} {m.count === 1 ? 'tema' : 'temas'}
+            </p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</Base>

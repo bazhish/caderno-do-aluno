@@ -1,0 +1,37 @@
+---
+import Tema from '../../../../layouts/Tema.astro';
+import { getCollection, render } from 'astro:content';
+import { splitSlug, bimestreLabel as bimLabelFn } from '../../../../lib/slug';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('ds');
+  return entries.map((e) => {
+    const [materiaSlug, bimestreSlug, semanaSlug] = splitSlug(e.id);
+    return {
+      params: { materia: materiaSlug, bimestre: bimestreSlug, semana: semanaSlug },
+      props: { entry: e },
+    };
+  });
+}
+
+const { materia, bimestre } = Astro.params;
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const subjectLabel = entry.data.subject;
+---
+
+<Tema
+  title={entry.data.title}
+  subject={subjectLabel}
+  relevance={entry.data.relevance}
+  questions={entry.data.questions}
+  active="ds"
+  breadcrumb={[
+    { label: 'DS', href: '/ds' },
+    { label: subjectLabel, href: `/ds/${materia}/` },
+    { label: bimLabelFn(bimestre), href: `/ds/${materia}/${bimestre}/` },
+    { label: entry.data.title },
+  ]}
+>
+  <Content />
+</Tema>
