@@ -2,6 +2,7 @@
 import Base from '../../../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { buildMateriaBimestreTree, splitSlug, semanaLabel } from '../../../../lib/slug';
+import { u } from '../../../../lib/url';
 
 export async function getStaticPaths() {
   const entries = await getCollection('ds');
@@ -24,9 +25,9 @@ const { materiaLabel, bimestreLabel, semanas } = Astro.props;
 
 <Base title={`${materiaLabel} · ${bimestreLabel}`} active="ds" description={`Semanas de ${materiaLabel}, ${bimestreLabel}`}>
   <nav class="font-mono text-xs text-ink-soft mb-4 flex flex-wrap gap-1">
-    <a href="/ds" class="hover:text-ink underline underline-offset-2">DS</a>
+    <a href={u('/ds')} class="hover:text-ink underline underline-offset-2">DS</a>
     <span>/</span>
-    <a href={`/ds/${materia}/`} class="hover:text-ink underline underline-offset-2">{materiaLabel}</a>
+    <a href={u(`/ds/${materia}/`)} class="hover:text-ink underline underline-offset-2">{materiaLabel}</a>
     <span>/</span>
     <span class="text-ink">{bimestreLabel}</span>
   </nav>
@@ -36,7 +37,7 @@ const { materiaLabel, bimestreLabel, semanas } = Astro.props;
     {semanas.map((s) => (
       <li>
         <a
-          href={`/ds/${materia}/${bimestre}/${splitSlug(s.id)[2]}/`}
+          href={u(`/ds/${materia}/${bimestre}/${splitSlug(s.id)[2]}/`)}
           class="flex items-center justify-between gap-4 rounded-md border border-paper-dark px-5 py-4 hover:border-ds transition-colors bg-white/50"
         >
           <span class="font-mono text-xs text-ink-soft shrink-0">{semanaLabel(splitSlug(s.id)[2])}</span>

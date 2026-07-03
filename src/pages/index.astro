@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import HelpTip from '../components/HelpTip.astro';
+import { u } from '../lib/url';
 
 const categories = [
   {
@@ -59,7 +60,7 @@ const categories = [
   <section class="grid md:grid-cols-3 gap-5">
     {categories.map((cat) => (
       <a
-        href={cat.href}
+        href={u(cat.href)}
         class="group block rounded-lg border-2 p-6 transition-transform hover:-translate-y-1"
         style={`border-color: ${cat.color}; background-color: ${cat.soft};`}
       >

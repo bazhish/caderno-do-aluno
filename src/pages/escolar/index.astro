@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import HelpTip from '../../components/HelpTip.astro';
 import { getCollection } from 'astro:content';
 import { buildMateriaBimestreTree } from '../../lib/slug';
+import { u } from '../../lib/url';
 
 const entries = await getCollection('escolar');
 const tree = buildMateriaBimestreTree(entries);
@@ -29,7 +30,7 @@ const materias = [...tree.values()].sort((a, b) => a.label.localeCompare(b.label
       {materias.map((m) => (
         <li>
           <a
-            href={`/escolar/${m.slug}/`}
+            href={u(`/escolar/${m.slug}/`)}
             class="block rounded-lg border-2 p-5 hover:-translate-y-0.5 transition-transform"
             style="border-color: var(--color-escolar); background-color: var(--color-escolar-soft);"
           >

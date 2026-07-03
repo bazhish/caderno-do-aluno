@@ -1,4 +1,6 @@
 ---
+import { u } from '../lib/url';
+
 interface Props {
   active?: 'hub' | 'enem' | 'escolar' | 'ds' | null;
 }
@@ -19,7 +21,7 @@ const tabs = [
     const isActive = active === tab.key;
     return (
       <a
-        href={tab.href}
+        href={u(tab.href)}
         class="tab font-display font-bold text-xs sm:text-sm md:text-base uppercase tracking-wide px-3.5 sm:px-5 md:px-7 py-2.5 md:py-3 rounded-t-lg transition-all"
         style={`--tab-color: ${tab.color}; --tab-soft: ${tab.soft}; z-index: ${isActive ? 30 : 4 - i};`}
         data-active={isActive}

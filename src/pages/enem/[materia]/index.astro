@@ -2,6 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { splitSlug } from '../../../lib/slug';
+import { u } from '../../../lib/url';
 
 export async function getStaticPaths() {
   const entries = await getCollection('enem');
@@ -24,7 +25,7 @@ const subjectLabel = temas[0]?.data.subject ?? materia;
 
 <Base title={subjectLabel} active="enem" description={`Temas de ${subjectLabel} para o ENEM`}>
   <nav class="font-mono text-xs text-ink-soft mb-4">
-    <a href="/enem" class="hover:text-ink underline underline-offset-2">ENEM</a>
+    <a href={u('/enem')} class="hover:text-ink underline underline-offset-2">ENEM</a>
     <span> / </span>
     <span class="text-ink">{subjectLabel}</span>
   </nav>
@@ -34,7 +35,7 @@ const subjectLabel = temas[0]?.data.subject ?? materia;
     {temas.map((t) => (
       <li>
         <a
-          href={`/enem/${materia}/${splitSlug(t.id)[1]}/`}
+          href={u(`/enem/${materia}/${splitSlug(t.id)[1]}/`)}
           class="flex items-center justify-between gap-4 rounded-md border border-paper-dark px-5 py-4 hover:border-enem transition-colors bg-white/50"
         >
           <span class="font-body text-ink font-medium">{t.data.title}</span>

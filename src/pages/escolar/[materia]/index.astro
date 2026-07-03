@@ -2,6 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { buildMateriaBimestreTree } from '../../../lib/slug';
+import { u } from '../../../lib/url';
 
 export async function getStaticPaths() {
   const entries = await getCollection('escolar');
@@ -19,7 +20,7 @@ const bimestres = [...materia.bimestres.values()].sort((a, b) => a.slug.localeCo
 
 <Base title={materia.label} active="escolar" description={`Bimestres de ${materia.label}`}>
   <nav class="font-mono text-xs text-ink-soft mb-4">
-    <a href="/escolar" class="hover:text-ink underline underline-offset-2">Escolar</a>
+    <a href={u('/escolar')} class="hover:text-ink underline underline-offset-2">Escolar</a>
     <span> / </span>
     <span class="text-ink">{materia.label}</span>
   </nav>
@@ -29,7 +30,7 @@ const bimestres = [...materia.bimestres.values()].sort((a, b) => a.slug.localeCo
     {bimestres.map((b) => (
       <li>
         <a
-          href={`/escolar/${materiaSlug}/${b.slug}/`}
+          href={u(`/escolar/${materiaSlug}/${b.slug}/`)}
           class="flex items-center justify-between gap-4 rounded-md border border-paper-dark px-5 py-4 hover:border-escolar transition-colors bg-white/50"
         >
           <span class="font-body text-ink font-medium">{b.label}</span>

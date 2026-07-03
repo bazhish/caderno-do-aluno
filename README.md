@@ -22,10 +22,16 @@ chaves pro `.env` (modelo em [`.env.example`](./.env.example)).
 
 ## Colocando no ar (grátis)
 
-1. Suba esta pasta para um repositório no GitHub.
-2. Crie uma conta em [vercel.com](https://vercel.com) ou [pages.cloudflare.com](https://pages.cloudflare.com).
-3. Importe o repositório — a plataforma detecta Astro automaticamente (build: `npm run build`, output: `dist`).
-4. A cada `git push`, o site atualiza sozinho no link público.
+O deploy é automático via **GitHub Pages**: todo push na branch `main` dispara o workflow
+[.github/workflows/deploy.yml](./.github/workflows/deploy.yml), que builda o site e publica em
+**https://bazhish.github.io/caderno-do-aluno/**. Nada precisa ser feito manualmente.
+
+O workflow define `BASE_PATH=/caderno-do-aluno` porque o GitHub Pages serve o site num
+subcaminho — por isso todo link interno do código passa pelo helper `u()` de `src/lib/url.ts`.
+
+Alternativa: importar o repositório em [vercel.com](https://vercel.com) ou
+[pages.cloudflare.com](https://pages.cloudflare.com) também funciona sem configuração extra
+(nesses hosts o site fica na raiz e o `BASE_PATH` simplesmente não é definido).
 
 ## Como adicionar uma aula nova
 

@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import TabNav from '../components/TabNav.astro';
+import { u } from '../lib/url';
 
 interface Props {
   title: string;
@@ -41,7 +42,7 @@ const borderColor = active ? accentByTab[active] : 'var(--color-line)';
             <button type="button" class="hist-btn" onclick="history.back()" aria-label="Voltar">←</button>
             <button type="button" class="hist-btn" onclick="history.forward()" aria-label="Avançar">→</button>
           </div>
-          <a href="/" class="font-display font-bold text-base sm:text-lg md:text-xl text-black no-underline">
+          <a href={u('/')} class="font-display font-bold text-base sm:text-lg md:text-xl text-black no-underline">
             Caderno do Aluno<span style="color: var(--color-enem)">.</span>
           </a>
         </div>

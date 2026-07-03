@@ -2,6 +2,7 @@
 import Tema from '../../../../layouts/Tema.astro';
 import { getCollection, render } from 'astro:content';
 import { splitSlug, bimestreLabel as bimLabelFn } from '../../../../lib/slug';
+import { u } from '../../../../lib/url';
 
 export async function getStaticPaths() {
   const entries = await getCollection('ds');
@@ -30,9 +31,9 @@ const subjectLabel = entry.data.subject;
   active="ds"
   slug={`ds/${entry.id}`}
   breadcrumb={[
-    { label: 'DS', href: '/ds' },
-    { label: subjectLabel, href: `/ds/${materia}/` },
-    { label: bimLabelFn(bimestre), href: `/ds/${materia}/${bimestre}/` },
+    { label: 'DS', href: u('/ds') },
+    { label: subjectLabel, href: u(`/ds/${materia}/`) },
+    { label: bimLabelFn(bimestre), href: u(`/ds/${materia}/${bimestre}/`) },
     { label: entry.data.title },
   ]}
 >

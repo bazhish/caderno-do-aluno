@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import HelpTip from '../../components/HelpTip.astro';
 import { getCollection } from 'astro:content';
 import { splitSlug } from '../../lib/slug';
+import { u } from '../../lib/url';
 
 // As 4 áreas oficiais do ENEM. Toda matéria listada aqui aparece na página,
 // mesmo sem conteúdo publicado ainda (estado vazio padronizado).
@@ -77,7 +78,7 @@ for (const e of entries) {
               <li>
                 {hasContent ? (
                   <a
-                    href={`/enem/${s.slug}/`}
+                    href={u(`/enem/${s.slug}/`)}
                     class="block rounded-lg border-2 p-5 hover:-translate-y-0.5 transition-transform"
                     style="border-color: var(--color-enem); background-color: var(--color-enem-soft);"
                   >
