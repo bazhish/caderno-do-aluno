@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 
 // BASE_PATH/SITE_URL são definidos pelo workflow de deploy (GitHub Pages serve
-// o site em /caderno-do-aluno). Localmente e em hosts na raiz ficam vazios.
+// o site em /caderno-da-turma). Localmente e em hosts na raiz ficam vazios.
 // https://astro.build/config
 export default defineConfig({
   site: process.env.SITE_URL || undefined,

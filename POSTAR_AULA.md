@@ -17,9 +17,9 @@ Pré-requisito: uma conta no GitHub com acesso de escrita a este repositório
 
 Clique no link da categoria certa (abre o editor web já na pasta correta):
 
-- **ENEM**: [criar arquivo em src/content/enem/](https://github.com/bazhish/caderno-do-aluno/new/main?filename=src/content/enem/materia/tema.mdx)
-- **Escolar**: [criar arquivo em src/content/escolar/](https://github.com/bazhish/caderno-do-aluno/new/main?filename=src/content/escolar/materia/1-bimestre/semana-01-tema.mdx)
-- **DS**: [criar arquivo em src/content/ds/](https://github.com/bazhish/caderno-do-aluno/new/main?filename=src/content/ds/materia/1-bimestre/semana-01-tema.mdx)
+- **ENEM**: [criar arquivo em src/content/enem/](https://github.com/bazhish/caderno-da-turma/new/main?filename=src/content/enem/materia/tema.mdx)
+- **Escolar**: [criar arquivo em src/content/escolar/](https://github.com/bazhish/caderno-da-turma/new/main?filename=src/content/escolar/materia/1-bimestre/semana-01-tema.mdx)
+- **DS**: [criar arquivo em src/content/ds/](https://github.com/bazhish/caderno-da-turma/new/main?filename=src/content/ds/materia/1-bimestre/semana-01-tema.mdx)
 
 Ajuste o caminho/nome do arquivo no topo do editor seguindo as regras:
 
@@ -36,9 +36,9 @@ Cole o conteúdo gerado no Passo 1 e clique em **Commit changes** (pode commitar
 
 ## Passo 3 — Espere ~2 minutos
 
-O deploy é automático: acompanhe em [Actions](https://github.com/bazhish/caderno-do-aluno/actions).
+O deploy é automático: acompanhe em [Actions](https://github.com/bazhish/caderno-da-turma/actions).
 Quando o workflow ficar verde, a aula está no ar em
-**https://bazhish.github.io/caderno-do-aluno/**.
+**https://bazhish.github.io/caderno-da-turma/**.
 
 ## Se der errado
 
@@ -50,4 +50,4 @@ Quando o workflow ficar verde, a aula está no ar em
 - **Commitei besteira**: me avise (ADM) — todo commit é reversível.
 
 > Futuro: quando o sistema multi-sala chegar, esse fluxo vira um formulário dentro do próprio
-> site, com papel de coordenador — sem GitHub. O plano está em [ANALISE.md](./ANALISE.md).
+> site, com papel de coordenador — sem GitHub.

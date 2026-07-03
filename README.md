@@ -1,4 +1,4 @@
-# Caderno do Aluno
+# Caderno da Turma
 
 Site estático (Astro + React + Tailwind) para compartilhar aulas em 3 categorias: **ENEM**,
 **Escolar** e **DS**. Sem login, sem backend — qualquer pessoa com o link acessa em poucos cliques.
@@ -24,9 +24,9 @@ chaves pro `.env` (modelo em [`.env.example`](./.env.example)).
 
 O deploy é automático via **GitHub Pages**: todo push na branch `main` dispara o workflow
 [.github/workflows/deploy.yml](./.github/workflows/deploy.yml), que builda o site e publica em
-**https://bazhish.github.io/caderno-do-aluno/**. Nada precisa ser feito manualmente.
+**https://bazhish.github.io/caderno-da-turma/**. Nada precisa ser feito manualmente.
 
-O workflow define `BASE_PATH=/caderno-do-aluno` porque o GitHub Pages serve o site num
+O workflow define `BASE_PATH=/caderno-da-turma` porque o GitHub Pages serve o site num
 subcaminho — por isso todo link interno do código passa pelo helper `u()` de `src/lib/url.ts`.
 
 Alternativa: importar o repositório em [vercel.com](https://vercel.com) ou
@@ -34,8 +34,7 @@ Alternativa: importar o repositório em [vercel.com](https://vercel.com) ou
 (nesses hosts o site fica na raiz e o `BASE_PATH` simplesmente não é definido).
 
 > **Guia rápido sem instalar nada:** [POSTAR_AULA.md](./POSTAR_AULA.md) — fluxo IA + editor web
-> do GitHub, ~10 min do conteúdo bruto até a aula no ar. Análise competitiva e roadmap
-> multi-sala em [ANALISE.md](./ANALISE.md).
+> do GitHub, ~10 min do conteúdo bruto até a aula no ar.
 
 ## Como adicionar uma aula nova
 

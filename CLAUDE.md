@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-"Caderno do Aluno" — a static site (Astro + React + Tailwind) for sharing class lessons across three
+"Caderno da Turma" — a static site (Astro + React + Tailwind) for sharing class lessons across three
 categories: **ENEM**, **Escolar**, and **DS**. No login, no backend; content is authored as `.mdx` files
 and routes are generated automatically from the file tree. Site copy and content are in Portuguese (pt-BR).
 

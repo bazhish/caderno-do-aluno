@@ -1,5 +1,5 @@
 -- ============================================================================
--- Caderno do Aluno — schema do banco (Supabase)
+-- Caderno da Turma — schema do banco (Supabase)
 --
 -- PASSO A PASSO PRA ATIVAR O MODO REAL:
 --   1. Crie uma conta gratuita em https://supabase.com e um projeto novo.
@@ -25,7 +25,7 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   username text not null unique
     check (username ~ '^[a-z0-9][a-z0-9._-]{2,19}$'),
-  role text not null default 'aluno' check (role in ('aluno', 'adm')),
+  role text not null default 'aluno' check (role in ('aluno', 'coordenador', 'adm')),
   created_at timestamptz not null default now()
 );
 

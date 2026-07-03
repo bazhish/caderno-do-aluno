@@ -6,8 +6,6 @@ on:
   workflow_dispatch:
 
 # Publica o build na branch gh-pages; o GitHub Pages serve a partir dela.
-# (O método via actions/deploy-pages exige habilitar o Pages manualmente
-# nas configurações do repositório; o push na gh-pages habilita sozinho.)
 permissions:
   contents: write
 
@@ -27,8 +25,13 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
-          BASE_PATH: /caderno-do-aluno
+          BASE_PATH: /caderno-da-turma
           SITE_URL: https://bazhish.github.io
+          # Chaves públicas do Supabase (anon key é feita pra ir ao navegador;
+          # a segurança real é a RLS). Definidas em Settings → Secrets and
+          # variables → Actions → Variables. Vazias = modo demonstração.
+          PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ vars.PUBLIC_SUPABASE_ANON_KEY }}
       - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
