@@ -24,8 +24,11 @@ const subjectLabel = entry.data.subject;
   title={entry.data.title}
   subject={subjectLabel}
   relevance={entry.data.relevance}
+  quickSummary={entry.data.quickSummary}
+  resources={entry.data.resources}
   questions={entry.data.questions}
   active="enem"
+  slug={`enem/${entry.id}`}
   breadcrumb={[
     { label: 'ENEM', href: '/enem' },
     { label: subjectLabel, href: `/enem/${materia}/` },

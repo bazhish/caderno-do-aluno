@@ -10,6 +10,16 @@ npm install
 npm run dev       # abre em http://localhost:4321
 ```
 
+## Comentários e login
+
+Cada aula tem uma seção "Comentários da Turma" com cadastro/login (e-mail + senha + nome de
+usuário único). Sem configuração, ela roda em **modo demonstração**: contas e comentários ficam
+salvos só no navegador, e a primeira conta criada vira ADM — o suficiente pra visualizar tudo.
+
+Pra ativar o modo real (banco de dados de verdade, grátis), siga o passo a passo no topo de
+[`supabase/schema.sql`](./supabase/schema.sql): criar projeto no Supabase, rodar o SQL, copiar as
+chaves pro `.env` (modelo em [`.env.example`](./.env.example)).
+
 ## Colocando no ar (grátis)
 
 1. Suba esta pasta para um repositório no GitHub.
@@ -49,6 +59,26 @@ subject: "Nome da Matéria"     # aparece como rótulo (ex: "Matemática")
 order: 1                        # ordem de exibição na lista
 relevance: >
   Parágrafo curto: por que esse tema importa e com que frequência cai.
+quickSummary: >
+  Opcional. 2-4 linhas de resumo direto, exibido em destaque no topo da aula.
+resources:                      # opcional — inteiro ou por subseção
+  videoAula:
+    link: "https://..."
+    duracao: "12 min"
+    motivo: "por que vale assistir"
+  cursoGratuito:
+    link: "https://..."
+    cargaHoraria: "4h"
+    indicadoPara: "iniciante | revisão | avançado"
+  materiaisAdicionais:
+    ebook: "..."
+    exercicios: "..."
+    provaAntiga: "..."
+    outro: "..."
+    nivel: "fácil | médio | difícil"
+  conteudoComplementar:
+    conteudo: "..."
+    comoAjuda: "..."
 questions:                      # sempre 5, nesta ordem
   - question: "Enunciado da questão 1"
     options:
@@ -65,8 +95,9 @@ questions:                      # sempre 5, nesta ordem
 
 ## Aula Teórica Completa
 
-Texto explicativo em Markdown normal. Toda fórmula deve vir desmembrada, explicando cada
-variável (ex: "A = b × h — A é a área, b é a base, h é a altura").
+Texto explicativo rico mas direto: parágrafos curtos, um subtítulo (`###`) por sub-tópico quando o
+tema tiver mais de 2-3 partes. Toda fórmula deve vir desmembrada, explicando cada variável
+(ex: "A = b × h — A é a área, b é a base, h é a altura").
 
 ## Tópicos-Chave para Revisão
 
@@ -80,7 +111,12 @@ Separe cada parágrafo com uma linha em branco — cada um vira um bloco visual 
 ```
 
 O quiz (seção "Teste de Fogo") é gerado automaticamente a partir do array `questions` do
-frontmatter — não precisa escrever nada a mais no corpo do arquivo.
+frontmatter — não precisa escrever nada a mais no corpo do arquivo. Cada questão tem seu próprio
+botão "Corrigir", independente das outras.
+
+> **Convertendo conteúdo bruto para esse formato:** veja [`CONTEUDO_PROMPT.md`](./CONTEUDO_PROMPT.md)
+> — um prompt pronto pra colar em qualquer IA de chat junto com suas anotações e sair com o `.mdx`
+> formatado, sem precisar montar o arquivo manualmente.
 
 ## Estrutura do projeto
 
@@ -89,14 +125,19 @@ src/
   content.config.ts       # schema (Zod) das 3 coleções: enem, escolar, ds
   content/                # as aulas em .mdx (dado real do site)
   components/
-    Quiz.jsx               # quiz interativo com botão de restaurar
-    TabNav.astro            # navegação entre as 4 abas (Início, ENEM, Escolar, DS), retrátil
+    Quiz.jsx               # quiz interativo, corrigido questão por questão
+    Comentarios.jsx         # comentários por aula, com login (Supabase ou modo demo)
+    Recursos.astro          # bloco de recursos extras (vídeo aula, curso, materiais, complementar)
+    TabNav.astro            # navegação entre as 4 abas (Início, ENEM, Escolar, DS)
     HelpTip.astro            # botão "?" que abre um card de ajuda contextual (modal)
+  lib/commentsBackend.js  # backend dos comentários: Supabase real ou demo (localStorage)
   layouts/
-    Base.astro               # casco HTML, fontes, navegação, botões voltar/avançar
-    Tema.astro                # estrutura fixa de toda aula (relevância + conteúdo + quiz)
+    Base.astro               # casco HTML, fontes, navegação, botões voltar/avançar, folha estilo fichário
+    Tema.astro                # estrutura fixa de toda aula (relevância + conteúdo + recursos + quiz)
   pages/                    # rotas, geradas a partir do content/
   lib/slug.ts                # helpers para transformar caminho de arquivo em rótulo/URL
+
+CONTEUDO_PROMPT.md        # prompt pronto pra converter anotações brutas em aula .mdx via IA
 ```
 
 ## Conteúdo atual

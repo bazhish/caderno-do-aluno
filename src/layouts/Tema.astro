@@ -1,7 +1,9 @@
 ---
 import Base from './Base.astro';
 import Quiz from '../components/Quiz.jsx';
+import Comentarios from '../components/Comentarios.jsx';
 import HelpTip from '../components/HelpTip.astro';
+import Recursos from '../components/Recursos.astro';
 
 interface Crumb {
   label: string;
@@ -11,11 +13,14 @@ interface Props {
   title: string;
   subject: string;
   relevance: string;
+  quickSummary?: string;
+  resources?: any;
   questions: any[];
   active: 'enem' | 'escolar' | 'ds';
   breadcrumb: Crumb[];
+  slug: string;
 }
-const { title, subject, relevance, questions, active, breadcrumb } = Astro.props;
+const { title, subject, relevance, quickSummary, resources, questions, active, breadcrumb, slug } = Astro.props;
 ---
 
 <Base title={title} active={active} description={relevance}>
@@ -39,6 +44,15 @@ const { title, subject, relevance, questions, active, breadcrumb } = Astro.props
     {title}
   </h1>
 
+  {quickSummary && (
+    <section class="mb-6 rounded-lg p-4" style={`background-color: var(--color-${active}-soft);`}>
+      <p class="font-mono text-[11px] uppercase tracking-wide mb-1.5" style={`color: var(--color-${active})`}>
+        ⚡ Resumo Rápido
+      </p>
+      <p class="font-body text-sm text-ink leading-relaxed">{quickSummary}</p>
+    </section>
+  )}
+
   <section class="mb-10 border-l-4 pl-5" style={`border-color: var(--color-${active})`}>
     <p class="font-mono text-[11px] uppercase tracking-wide text-ink-soft mb-2">
       Visão Geral e Relevância
@@ -50,12 +64,24 @@ const { title, subject, relevance, questions, active, breadcrumb } = Astro.props
     <slot />
   </article>
 
+  <Recursos resources={resources} accent={active} />
+
   <div class="flex items-center gap-2 mt-10 mb-1 not-prose">
     <HelpTip title="Como funciona o Teste de Fogo">
-      São sempre 5 questões sobre o tema. Responda todas, depois clique em "Corrigir respostas"
-      para ver o gabarito comentado. Use "Restaurar" para tentar de novo do zero.
+      Cada questão tem seu próprio botão de corrigir. Responda e corrija uma de cada vez — errou?
+      A explicação aparece na hora, embaixo da própria questão.
     </HelpTip>
   </div>
 
   <Quiz questions={questions} accent={active} client:visible />
+
+  <div class="flex items-center gap-2 mt-10 mb-1 not-prose">
+    <HelpTip title="Como funcionam os comentários">
+      Qualquer pessoa pode ler os comentários. Pra escrever, crie uma conta com e-mail e um nome
+      de usuário (único, sem repetir). Você pode apagar o que você mesmo escreveu; os ADMs podem
+      apagar qualquer comentário pra manter o espaço saudável.
+    </HelpTip>
+  </div>
+
+  <Comentarios slug={slug} accent={active} client:visible />
 </Base>

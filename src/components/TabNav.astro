@@ -12,101 +12,44 @@ const tabs = [
 ];
 ---
 
-<div id="tabnav-shell" class="tabnav-shell" data-collapsed="false">
-  <nav class="tabnav-tabs flex gap-2 px-4 md:px-10 flex-1 flex-wrap" aria-label="Categorias" id="tabnav-tabs">
-    {tabs.map((tab, i) => {
-      const isActive = active === tab.key;
-      return (
-        <a
-          href={tab.href}
-          class="tab font-display font-bold text-sm md:text-base uppercase tracking-wide px-5 md:px-7 py-3 rounded-t-lg border-2 border-b-0 transition-all"
-          style={`
-            --tab-color: ${tab.color};
-            --tab-soft: ${tab.soft};
-            margin-top: ${isActive ? '0px' : '10px'};
-            z-index: ${isActive ? 10 : i};
-          `}
-          data-active={isActive}
-        >
-          {tab.label}
-        </a>
-      );
-    })}
-  </nav>
-  <button
-    type="button"
-    id="tabnav-toggle"
-    class="tabnav-toggle font-mono text-xs text-ink-soft px-3 py-2 hover:text-ink transition-colors"
-    aria-expanded="true"
-    aria-controls="tabnav-tabs"
-  >
-    <span class="tabnav-toggle-icon" aria-hidden="true">▾</span>
-    <span class="tabnav-toggle-label">Ocultar abas</span>
-  </button>
-</div>
+<!-- z-index: a folha (.paper-sheet, z 5) cobre a base das abas inativas (z 1-4),
+     como divisórias coladas nas folhas de trás; só a aba ativa (z 30) fica na frente. -->
+<nav class="flex gap-1.5 md:gap-2 px-3 md:px-10 flex-wrap" aria-label="Categorias">
+  {tabs.map((tab, i) => {
+    const isActive = active === tab.key;
+    return (
+      <a
+        href={tab.href}
+        class="tab font-display font-bold text-xs sm:text-sm md:text-base uppercase tracking-wide px-3.5 sm:px-5 md:px-7 py-2.5 md:py-3 rounded-t-lg transition-all"
+        style={`--tab-color: ${tab.color}; --tab-soft: ${tab.soft}; z-index: ${isActive ? 30 : 4 - i};`}
+        data-active={isActive}
+      >
+        {tab.label}
+      </a>
+    );
+  })}
+</nav>
 
 <style>
-  .tabnav-shell {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
   .tab {
+    background: var(--tab-soft);
     color: var(--tab-color);
-    border-color: var(--tab-color);
-    background: var(--color-paper);
-    opacity: 0.6;
+    border: 2px solid var(--tab-color);
+    border-bottom: none;
+    margin-top: 10px;
+    transform: translateY(6px);
+    opacity: 0.7;
   }
   .tab:hover {
-    opacity: 0.9;
-    margin-top: 4px !important;
+    transform: translateY(3px);
+    opacity: 1;
   }
   .tab[data-active='true'] {
+    margin-top: 0;
+    transform: none;
     opacity: 1;
-    background: var(--color-paper);
-    box-shadow: 0 -2px 0 0 var(--color-paper);
-  }
-  .tabnav-tabs {
-    transition: max-height 0.2s ease, opacity 0.15s ease;
-    max-height: 4.5rem;
-    overflow: hidden;
-  }
-  .tabnav-shell[data-collapsed='true'] .tabnav-tabs {
-    max-height: 0;
-    opacity: 0;
-    pointer-events: none;
-  }
-  .tabnav-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    white-space: nowrap;
-    margin-top: 10px;
   }
   @media (prefers-reduced-motion: reduce) {
-    .tab, .tabnav-tabs { transition: none; }
+    .tab { transition: none; }
   }
 </style>
-
-<script>
-  const shell = document.getElementById('tabnav-shell');
-  const toggle = document.getElementById('tabnav-toggle');
-  const STORAGE_KEY = 'tabnav-collapsed';
-
-  function applyState(collapsed: boolean) {
-    shell?.setAttribute('data-collapsed', String(collapsed));
-    toggle?.setAttribute('aria-expanded', String(!collapsed));
-    const icon = toggle?.querySelector('.tabnav-toggle-icon');
-    const label = toggle?.querySelector('.tabnav-toggle-label');
-    if (icon) icon.textContent = collapsed ? '▸' : '▾';
-    if (label) label.textContent = collapsed ? 'Mostrar abas' : 'Ocultar abas';
-  }
-
-  applyState(localStorage.getItem(STORAGE_KEY) === 'true');
-
-  toggle?.addEventListener('click', () => {
-    const next = shell?.getAttribute('data-collapsed') !== 'true';
-    localStorage.setItem(STORAGE_KEY, String(next));
-    applyState(next);
-  });
-</script>

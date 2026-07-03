@@ -44,20 +44,27 @@ subject → bimester → week tree (`buildMateriaBimestreTree`).
 
 ### Content schema
 
-`src/content.config.ts` defines three Zod-validated collections (`enem`, `escolar`, `ds`) using the
-`glob` loader. All three share the same schema shape: `title`, `subject`, `relevance`, `order`, and a
-`questions` array (exactly 5 entries, each with `question`, 5 `options`, `correctIndex` 0–4,
-`explanation`, optional `source`). This schema is the contract for every `.mdx` frontmatter block —
-new fields need to be added here first or the build will fail validation.
+`src/content.config.ts` defines a shared `lessonSchema` (Zod) reused by all three collections
+(`enem`, `escolar`, `ds`) via the `glob` loader: `title`, `subject`, `relevance`, `order`, optional
+`quickSummary` (short highlighted summary), optional `resources` (nested, all-optional block for
+`videoAula` / `cursoGratuito` / `materiaisAdicionais` / `conteudoComplementar` — each sub-section
+only renders if present), and a `questions` array (exactly 5 entries, each with `question`, 5
+`options`, `correctIndex` 0–4, `explanation`, optional `source`). This schema is the contract for
+every `.mdx` frontmatter block — new fields need to be added here first or the build will fail
+validation. See [CONTEUDO_PROMPT.md](./CONTEUDO_PROMPT.md) for a ready-made LLM prompt that converts
+raw notes into a schema-conformant `.mdx` file.
 
 ### Rendering pipeline
 
 `Tema.astro` (`src/layouts/Tema.astro`) is the fixed structure every lesson page renders through:
-breadcrumb → subject label → title → relevance section → MDX body (`<slot />`) → `Quiz` component.
-It wraps `Base.astro`, which holds the HTML shell, fonts, the back/forward history buttons, and
-`TabNav` (the Início/ENEM/Escolar/DS tab switcher). The quiz ("Teste de Fogo") in
+breadcrumb → subject label → title → optional quick-summary callout → relevance section → MDX body
+(`<slot />`) → `Recursos.astro` (renders the optional `resources` block, section-by-section) →
+`Quiz` component. It wraps `Base.astro`, which holds the HTML shell, fonts, the back/forward history
+buttons, and `TabNav` (the Início/ENEM/Escolar/DS tab switcher). The quiz ("Teste de Fogo") in
 `src/components/Quiz.jsx` is a client-hydrated React island (`client:visible`) driven entirely by the
-`questions` array from frontmatter — no separate quiz content is authored in the MDX body.
+`questions` array from frontmatter — no separate quiz content is authored in the MDX body. Each
+question corrects independently (its own "Corrigir" button and inline explanation); there is no
+single global submit gate.
 
 ### ENEM area grouping
 
@@ -72,9 +79,40 @@ link if its slug matches an entry in `ENEM_AREAS`; otherwise update that list fi
 
 `src/components/HelpTip.astro` renders a `?` button plus a native `<dialog>` popup (used for
 short, page-specific explanations); clicks are handled by one delegated listener in `Base.astro`
-(`data-help-target` / `data-help-close`) rather than per-instance scripts. `TabNav.astro` is
-collapsible — its expand/collapse state persists in `localStorage` (`tabnav-collapsed`) via an
-inline script in that component.
+(`data-help-target` / `data-help-close`) rather than per-instance scripts.
+
+### Binder-sheet visual
+
+The main content wrapper in `Base.astro` (`.paper-sheet`) is styled to look like a loose-leaf binder
+page: a CSS-only hole-punch column (`::before` with three layered radial-gradients per hole — paper
+fill, top inner shadow, bottom highlight — distributed with `background-repeat: space` so no hole is
+ever clipped at the sheet edges), and a border color from the `accentByTab` map in `Base.astro`
+(hub → `--color-ink`, others → their category accent; `--color-line` when `active` is null). Stacking
+is deliberate: inactive tabs sit at z 1–4, the sheet at z 5 (covering their bottoms so they look
+tucked behind), the active tab at z 30. Tabs in `TabNav.astro` are pastel post-its: soft category
+color fill (`--tab-soft`) with the accent as text/border; inactive ones are translucent and
+translated down, the active one sits flush with the sheet top.
+
+Navigation is plain MPA (full page loads). Astro's `<ClientRouter />` was tried and removed on
+purpose — the user rejected animated page transitions, and persisting the header froze `TabNav`'s
+active state. Don't reintroduce it.
+
+### Comments and auth (Supabase with local demo fallback)
+
+`src/components/Comentarios.jsx` (React island, `client:visible`, rendered at the bottom of
+`Tema.astro`) provides per-lesson comments with email/password auth. It talks to
+`src/lib/commentsBackend.js`, which exposes one interface with two implementations chosen at build
+time: if `PUBLIC_SUPABASE_URL` + `PUBLIC_SUPABASE_ANON_KEY` are set in `.env`, it lazy-imports
+`@supabase/supabase-js` and uses the real backend; otherwise it falls back to a **demo mode** backed
+by `localStorage` (visible banner in the UI; first account created in the browser gets the `adm`
+role). Comments are keyed by `lesson_slug` = `<collection>/<entry.id>` (e.g.
+`enem/fisica/cinematica`), passed as the `slug` prop from each lesson page through `Tema.astro`.
+
+The real schema + RLS policies live in [supabase/schema.sql](./supabase/schema.sql) (setup
+walkthrough in its header comment). Security invariants: usernames are UNIQUE at the DB level
+(created via an `auth.users` trigger from signup metadata, not client inserts); deletes are soft
+(`deleted_at`); RLS — not the UI — enforces who can write/delete (owner or `adm`). Anyone can read
+comments without logging in.
 
 ### Category accent colors
 

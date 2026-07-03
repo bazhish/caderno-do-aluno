@@ -8,6 +8,15 @@ interface Props {
   description?: string;
 }
 const { title, active = null, description = 'Central de conteúdo da turma' } = Astro.props;
+
+// A borda da folha segue a cor da aba ativa (o hub usa o mesmo "preto" da aba Início).
+const accentByTab: Record<string, string> = {
+  hub: 'var(--color-ink)',
+  enem: 'var(--color-enem)',
+  escolar: 'var(--color-escolar)',
+  ds: 'var(--color-ds)',
+};
+const borderColor = active ? accentByTab[active] : 'var(--color-line)';
 ---
 
 <!doctype html>
@@ -25,31 +34,34 @@ const { title, active = null, description = 'Central de conteúdo da turma' } = 
     />
   </head>
   <body class="min-h-screen flex flex-col">
-    <header class="pt-8 md:pt-12">
-      <div class="px-4 md:px-10 flex items-center justify-between gap-4 max-w-5xl mx-auto w-full">
-        <div class="flex items-center gap-3">
+    <header class="pt-6 sm:pt-8 md:pt-12">
+      <div class="px-3 sm:px-4 md:px-10 flex items-center justify-between gap-3 max-w-5xl mx-auto w-full">
+        <div class="flex items-center gap-2 sm:gap-3">
           <div class="flex items-center gap-1" role="group" aria-label="Navegação do histórico">
             <button type="button" class="hist-btn" onclick="history.back()" aria-label="Voltar">←</button>
             <button type="button" class="hist-btn" onclick="history.forward()" aria-label="Avançar">→</button>
           </div>
-          <a href="/" class="font-display font-bold text-lg md:text-xl text-black no-underline">
+          <a href="/" class="font-display font-bold text-base sm:text-lg md:text-xl text-black no-underline">
             Caderno do Aluno<span style="color: var(--color-enem)">.</span>
           </a>
         </div>
         <span class="font-mono text-xs text-ink-soft hidden md:inline">Feito por alunos, para alunos</span>
       </div>
-      <div class="max-w-5xl mx-auto w-full mt-6">
+      <div class="max-w-5xl mx-auto w-full mt-5 sm:mt-6">
         <TabNav active={active} />
       </div>
     </header>
 
-    <main class="flex-1 max-w-5xl mx-auto w-full px-4 md:px-10">
-      <div class="bg-paper border-2 rounded-b-lg rounded-tr-lg border-paper-dark min-h-[60vh] p-5 md:p-10 -mt-[2px]" style="border-color: var(--color-line); background-color: color-mix(in srgb, var(--color-paper) 92%, white);">
+    <main class="flex-1 max-w-5xl mx-auto w-full px-3 sm:px-4 md:px-10">
+      <div
+        class="paper-sheet min-h-[60vh] p-4 pl-10 sm:p-6 sm:pl-12 md:p-10 md:pl-16 -mt-[2px]"
+        style={`border-color: ${borderColor}; background-color: color-mix(in srgb, var(--color-paper) 92%, white);`}
+      >
         <slot />
       </div>
     </main>
 
-    <footer class="max-w-5xl mx-auto w-full px-4 md:px-10 py-10 mt-6">
+    <footer class="max-w-5xl mx-auto w-full px-3 sm:px-4 md:px-10 py-8 sm:py-10 mt-6">
       <p class="font-mono text-xs text-ink-soft">
         Consulte sempre um professor em caso de dúvidas.
       </p>
@@ -60,8 +72,8 @@ const { title, active = null, description = 'Central de conteúdo da turma' } = 
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 1.75rem;
-        height: 1.75rem;
+        width: 2.25rem;
+        height: 2.25rem;
         border-radius: 9999px;
         border: 1px solid var(--color-line);
         background: var(--color-paper);
@@ -73,6 +85,36 @@ const { title, active = null, description = 'Central de conteúdo da turma' } = 
       .hist-btn:hover {
         background: var(--color-paper-dark);
         color: var(--color-ink);
+      }
+
+      /* Folha estilo fichário: borda na cor da aba ativa e furos perfurados na
+         margem esquerda. z-index 5 deixa a folha na frente das abas inativas
+         (que ficam "coladas" nas folhas de trás) e atrás da aba ativa (z 30). */
+      .paper-sheet {
+        position: relative;
+        z-index: 5;
+        border-width: 2px;
+        border-style: solid;
+        border-radius: 0 0.6rem 0.6rem 0;
+      }
+      /* Furos: recuados 12px do topo/base pra nunca encostar na borda;
+         background-repeat "space" distribui furos inteiros, sem cortar nenhum.
+         Três camadas por furo: miolo na cor do fundo da página (o "vazado"),
+         sombra interna no topo e brilho na base — efeito de papel perfurado. */
+      .paper-sheet::before {
+        content: '';
+        position: absolute;
+        top: 12px;
+        bottom: 12px;
+        left: 8px;
+        width: 18px;
+        pointer-events: none;
+        background-image:
+          radial-gradient(circle 5px at 9px 20px, var(--color-paper) 99%, transparent 100%),
+          radial-gradient(circle 6px at 9px 18.5px, rgba(31, 42, 68, 0.38) 99%, transparent 100%),
+          radial-gradient(circle 6px at 9px 21.5px, rgba(255, 255, 255, 0.85) 99%, transparent 100%);
+        background-size: 18px 40px;
+        background-repeat: no-repeat space;
       }
     </style>
 
