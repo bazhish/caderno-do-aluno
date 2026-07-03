@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import HelpTip from '../../components/HelpTip.astro';
 import { getCollection } from 'astro:content';
 import { buildMateriaBimestreTree } from '../../lib/slug';
 
@@ -9,11 +10,16 @@ const materias = [...tree.values()].sort((a, b) => a.label.localeCompare(b.label
 ---
 
 <Base title="DS" active="ds" description="Material do curso DS, por matéria">
-  <p class="font-mono text-xs uppercase tracking-widest mb-2" style="color: var(--color-ds)">ds</p>
+  <div class="flex items-center gap-2 mb-2">
+    <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--color-ds)">ds</p>
+    <HelpTip title="Como funciona a aba DS">
+      Material do curso técnico, organizado por matéria, bimestre e semana, com explicações em
+      linguagem simples.
+    </HelpTip>
+  </div>
   <h1 class="font-display text-3xl md:text-4xl font-bold text-ink mb-3">Matérias</h1>
   <p class="font-body text-ink-soft max-w-lg mb-10 leading-relaxed">
-    O material do curso DS, feito para facilitar o entendimento, organizado por matéria,
-    depois por bimestre, depois por semana.
+    Material do curso técnico, organizado por matéria, bimestre e semana.
   </p>
 
   {materias.length === 0 ? (

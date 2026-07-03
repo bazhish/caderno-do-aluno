@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-"Caderno da Turma" — a static site (Astro + React + Tailwind) for sharing class lessons across three
+"Caderno do Aluno" — a static site (Astro + React + Tailwind) for sharing class lessons across three
 categories: **ENEM**, **Escolar**, and **DS**. No login, no backend; content is authored as `.mdx` files
 and routes are generated automatically from the file tree. Site copy and content are in Portuguese (pt-BR).
 
@@ -54,10 +54,27 @@ new fields need to be added here first or the build will fail validation.
 
 `Tema.astro` (`src/layouts/Tema.astro`) is the fixed structure every lesson page renders through:
 breadcrumb → subject label → title → relevance section → MDX body (`<slot />`) → `Quiz` component.
-It wraps `Base.astro`, which holds the HTML shell, fonts, and `TabNav` (the ENEM/Escolar/DS switcher).
-The quiz ("Teste de Fogo") in `src/components/Quiz.jsx` is a client-hydrated React island
-(`client:visible`) driven entirely by the `questions` array from frontmatter — no separate quiz content
-is authored in the MDX body.
+It wraps `Base.astro`, which holds the HTML shell, fonts, the back/forward history buttons, and
+`TabNav` (the Início/ENEM/Escolar/DS tab switcher). The quiz ("Teste de Fogo") in
+`src/components/Quiz.jsx` is a client-hydrated React island (`client:visible`) driven entirely by the
+`questions` array from frontmatter — no separate quiz content is authored in the MDX body.
+
+### ENEM area grouping
+
+`src/pages/enem/index.astro` hardcodes the 4 official ENEM knowledge areas and their subjects
+(`ENEM_AREAS`), each subject mapped to a slug. It cross-references that list against actual
+`enem` collection entries (matched by folder slug) to decide whether to render a linked card or a
+disabled "Material ainda não compartilhado" placeholder — every canonical subject always renders,
+regardless of whether content exists yet. Adding a new ENEM subject folder only produces a working
+link if its slug matches an entry in `ENEM_AREAS`; otherwise update that list first.
+
+### Contextual help and navigation chrome
+
+`src/components/HelpTip.astro` renders a `?` button plus a native `<dialog>` popup (used for
+short, page-specific explanations); clicks are handled by one delegated listener in `Base.astro`
+(`data-help-target` / `data-help-close`) rather than per-instance scripts. `TabNav.astro` is
+collapsible — its expand/collapse state persists in `localStorage` (`tabnav-collapsed`) via an
+inline script in that component.
 
 ### Category accent colors
 

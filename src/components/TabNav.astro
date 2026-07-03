@@ -1,38 +1,56 @@
 ---
 interface Props {
-  active?: 'enem' | 'escolar' | 'ds' | null;
+  active?: 'hub' | 'enem' | 'escolar' | 'ds' | null;
 }
 const { active = null } = Astro.props;
 
 const tabs = [
+  { key: 'hub', label: 'Início', href: '/', color: 'var(--color-ink)', soft: 'var(--color-paper-dark)' },
   { key: 'enem', label: 'ENEM', href: '/enem', color: 'var(--color-enem)', soft: 'var(--color-enem-soft)' },
   { key: 'escolar', label: 'Escolar', href: '/escolar', color: 'var(--color-escolar)', soft: 'var(--color-escolar-soft)' },
   { key: 'ds', label: 'DS', href: '/ds', color: 'var(--color-ds)', soft: 'var(--color-ds-soft)' },
 ];
 ---
 
-<nav class="flex gap-2 px-4 md:px-10" aria-label="Categorias">
-  {tabs.map((tab, i) => {
-    const isActive = active === tab.key;
-    return (
-      <a
-        href={tab.href}
-        class="tab font-display font-bold text-sm md:text-base uppercase tracking-wide px-5 md:px-7 py-3 rounded-t-lg border-2 border-b-0 transition-all"
-        style={`
-          --tab-color: ${tab.color};
-          --tab-soft: ${tab.soft};
-          margin-top: ${isActive ? '0px' : '10px'};
-          z-index: ${isActive ? 10 : i};
-        `}
-        data-active={isActive}
-      >
-        {tab.label}
-      </a>
-    );
-  })}
-</nav>
+<div id="tabnav-shell" class="tabnav-shell" data-collapsed="false">
+  <nav class="tabnav-tabs flex gap-2 px-4 md:px-10 flex-1 flex-wrap" aria-label="Categorias" id="tabnav-tabs">
+    {tabs.map((tab, i) => {
+      const isActive = active === tab.key;
+      return (
+        <a
+          href={tab.href}
+          class="tab font-display font-bold text-sm md:text-base uppercase tracking-wide px-5 md:px-7 py-3 rounded-t-lg border-2 border-b-0 transition-all"
+          style={`
+            --tab-color: ${tab.color};
+            --tab-soft: ${tab.soft};
+            margin-top: ${isActive ? '0px' : '10px'};
+            z-index: ${isActive ? 10 : i};
+          `}
+          data-active={isActive}
+        >
+          {tab.label}
+        </a>
+      );
+    })}
+  </nav>
+  <button
+    type="button"
+    id="tabnav-toggle"
+    class="tabnav-toggle font-mono text-xs text-ink-soft px-3 py-2 hover:text-ink transition-colors"
+    aria-expanded="true"
+    aria-controls="tabnav-tabs"
+  >
+    <span class="tabnav-toggle-icon" aria-hidden="true">▾</span>
+    <span class="tabnav-toggle-label">Ocultar abas</span>
+  </button>
+</div>
 
 <style>
+  .tabnav-shell {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
   .tab {
     color: var(--tab-color);
     border-color: var(--tab-color);
@@ -48,7 +66,47 @@ const tabs = [
     background: var(--color-paper);
     box-shadow: 0 -2px 0 0 var(--color-paper);
   }
+  .tabnav-tabs {
+    transition: max-height 0.2s ease, opacity 0.15s ease;
+    max-height: 4.5rem;
+    overflow: hidden;
+  }
+  .tabnav-shell[data-collapsed='true'] .tabnav-tabs {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .tabnav-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+    margin-top: 10px;
+  }
   @media (prefers-reduced-motion: reduce) {
-    .tab { transition: none; }
+    .tab, .tabnav-tabs { transition: none; }
   }
 </style>
+
+<script>
+  const shell = document.getElementById('tabnav-shell');
+  const toggle = document.getElementById('tabnav-toggle');
+  const STORAGE_KEY = 'tabnav-collapsed';
+
+  function applyState(collapsed: boolean) {
+    shell?.setAttribute('data-collapsed', String(collapsed));
+    toggle?.setAttribute('aria-expanded', String(!collapsed));
+    const icon = toggle?.querySelector('.tabnav-toggle-icon');
+    const label = toggle?.querySelector('.tabnav-toggle-label');
+    if (icon) icon.textContent = collapsed ? '▸' : '▾';
+    if (label) label.textContent = collapsed ? 'Mostrar abas' : 'Ocultar abas';
+  }
+
+  applyState(localStorage.getItem(STORAGE_KEY) === 'true');
+
+  toggle?.addEventListener('click', () => {
+    const next = shell?.getAttribute('data-collapsed') !== 'true';
+    localStorage.setItem(STORAGE_KEY, String(next));
+    applyState(next);
+  });
+</script>

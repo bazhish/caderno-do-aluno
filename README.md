@@ -1,4 +1,4 @@
-# Caderno da Turma
+# Caderno do Aluno
 
 Site estático (Astro + React + Tailwind) para compartilhar aulas em 3 categorias: **ENEM**,
 **Escolar** e **DS**. Sem login, sem backend — qualquer pessoa com o link acessa em poucos cliques.
@@ -26,6 +26,10 @@ rotas são geradas automaticamente a partir da pasta.
 ```
 src/content/enem/<materia>/<tema>.mdx
 ```
+A aba ENEM lista as matérias agrupadas pelas 4 áreas oficiais do exame (definidas em
+`src/pages/enem/index.astro`). Para a aula aparecer vinculada à matéria certa, `<materia>` precisa
+bater com um dos slugs já cadastrados nessa lista (ex: `fisica`, `matematica`, `historia`). Matérias
+sem conteúdo aparecem mesmo assim, com o aviso "Material ainda não compartilhado".
 
 **Escolar / DS** (matéria → bimestre → semana):
 ```
@@ -86,9 +90,10 @@ src/
   content/                # as aulas em .mdx (dado real do site)
   components/
     Quiz.jsx               # quiz interativo com botão de restaurar
-    TabNav.astro            # navegação entre as 3 categorias
+    TabNav.astro            # navegação entre as 4 abas (Início, ENEM, Escolar, DS), retrátil
+    HelpTip.astro            # botão "?" que abre um card de ajuda contextual (modal)
   layouts/
-    Base.astro               # casco HTML, fontes, navegação
+    Base.astro               # casco HTML, fontes, navegação, botões voltar/avançar
     Tema.astro                # estrutura fixa de toda aula (relevância + conteúdo + quiz)
   pages/                    # rotas, geradas a partir do content/
   lib/slug.ts                # helpers para transformar caminho de arquivo em rótulo/URL

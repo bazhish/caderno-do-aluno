@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import HelpTip from '../components/HelpTip.astro';
 
 const categories = [
   {
@@ -9,8 +10,8 @@ const categories = [
     color: 'var(--color-enem)',
     soft: 'var(--color-enem-soft)',
     description:
-      'Estudo focado no conteúdo cobrado pelo INEP: teoria enxuta, pegadinhas mapeadas e questões oficiais para treinar.',
-    meta: 'por matéria',
+      'Conteúdo focado no que o INEP cobra: teoria direta, pegadinhas mapeadas e questões oficiais para treinar.',
+    meta: 'por área e matéria',
   },
   {
     href: '/escolar',
@@ -29,22 +30,29 @@ const categories = [
     color: 'var(--color-ds)',
     soft: 'var(--color-ds-soft)',
     description:
-      'Material do curso técnico, com foco em revisão e linguagem simples para ajudar todo mundo a entender.',
+      'Material do curso técnico, em linguagem simples, para reforçar o que foi visto em aula.',
     meta: 'por bimestre e semana',
   },
 ];
 ---
 
-<Base title="Início" description="Hub de conteúdo de estudo compartilhado pela turma">
+<Base title="Início" active="hub" description="Painel central de conteúdo de estudo compartilhado pela turma">
   <section class="mb-12 md:mb-16">
-    <p class="font-mono text-xs uppercase tracking-widest text-ink-soft mb-3">página inicial</p>
+    <div class="flex items-center gap-2 mb-3">
+      <p class="font-mono text-xs uppercase tracking-widest text-ink-soft">hub principal</p>
+      <HelpTip title="Como usar este hub">
+        Este é o painel central: cada card abaixo leva para uma categoria de conteúdo. Use as abas
+        no topo para trocar de categoria a qualquer momento, ou os botões de seta para voltar e
+        avançar entre páginas já visitadas.
+      </HelpTip>
+    </div>
     <h1 class="font-display text-3xl md:text-5xl font-bold text-ink leading-tight mb-4 max-w-2xl">
       Tudo o que a turma estuda, num lugar só.
     </h1>
     <p class="font-body text-ink-soft max-w-xl leading-relaxed">
-      Escolha uma aba abaixo. Cada uma organiza o conteúdo de um jeito diferente — mas toda aula
-      segue a mesma estrutura: relevância, teoria explicada com calma, resumo para o caderno e um
-      teste de 5 questões no final.
+      Escolha uma categoria abaixo. Cada uma organiza o conteúdo de um jeito diferente, mas toda
+      aula segue a mesma estrutura: relevância, teoria explicada com calma, resumo para o caderno
+      e um teste de 5 questões no final.
     </p>
   </section>
 

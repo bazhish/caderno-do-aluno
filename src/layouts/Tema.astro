@@ -1,6 +1,7 @@
 ---
 import Base from './Base.astro';
 import Quiz from '../components/Quiz.jsx';
+import HelpTip from '../components/HelpTip.astro';
 
 interface Crumb {
   label: string;
@@ -48,6 +49,13 @@ const { title, subject, relevance, questions, active, breadcrumb } = Astro.props
   <article class="prose prose-tema max-w-none">
     <slot />
   </article>
+
+  <div class="flex items-center gap-2 mt-10 mb-1 not-prose">
+    <HelpTip title="Como funciona o Teste de Fogo">
+      São sempre 5 questões sobre o tema. Responda todas, depois clique em "Corrigir respostas"
+      para ver o gabarito comentado. Use "Restaurar" para tentar de novo do zero.
+    </HelpTip>
+  </div>
 
   <Quiz questions={questions} accent={active} client:visible />
 </Base>

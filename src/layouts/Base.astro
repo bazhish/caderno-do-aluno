@@ -4,7 +4,7 @@ import TabNav from '../components/TabNav.astro';
 
 interface Props {
   title: string;
-  active?: 'enem' | 'escolar' | 'ds' | null;
+  active?: 'hub' | 'enem' | 'escolar' | 'ds' | null;
   description?: string;
 }
 const { title, active = null, description = 'Central de conteúdo da turma' } = Astro.props;
@@ -16,7 +16,7 @@ const { title, active = null, description = 'Central de conteúdo da turma' } = 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <title>{title} · Caderno da Turma</title>
+    <title>{title} · Caderno do Aluno</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -26,11 +26,17 @@ const { title, active = null, description = 'Central de conteúdo da turma' } = 
   </head>
   <body class="min-h-screen flex flex-col">
     <header class="pt-8 md:pt-12">
-      <div class="px-4 md:px-10 flex items-baseline justify-between max-w-5xl mx-auto w-full">
-        <a href="/" class="font-display font-bold text-lg md:text-xl text-ink no-underline">
-          Caderno da Turma<span style="color: var(--color-enem)">.</span>
-        </a>
-        <span class="font-mono text-xs text-ink-soft hidden md:inline">material compartilhado pela sala</span>
+      <div class="px-4 md:px-10 flex items-center justify-between gap-4 max-w-5xl mx-auto w-full">
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1" role="group" aria-label="Navegação do histórico">
+            <button type="button" class="hist-btn" onclick="history.back()" aria-label="Voltar">←</button>
+            <button type="button" class="hist-btn" onclick="history.forward()" aria-label="Avançar">→</button>
+          </div>
+          <a href="/" class="font-display font-bold text-lg md:text-xl text-black no-underline">
+            Caderno do Aluno<span style="color: var(--color-enem)">.</span>
+          </a>
+        </div>
+        <span class="font-mono text-xs text-ink-soft hidden md:inline">Feito por alunos, para alunos</span>
       </div>
       <div class="max-w-5xl mx-auto w-full mt-6">
         <TabNav active={active} />
@@ -45,8 +51,55 @@ const { title, active = null, description = 'Central de conteúdo da turma' } = 
 
     <footer class="max-w-5xl mx-auto w-full px-4 md:px-10 py-10 mt-6">
       <p class="font-mono text-xs text-ink-soft">
-        Feito por alunos, para alunos. Conteúdo de exemplo — revise sempre com o professor.
+        Consulte sempre um professor em caso de dúvidas.
       </p>
     </footer>
+
+    <style>
+      .hist-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.75rem;
+        height: 1.75rem;
+        border-radius: 9999px;
+        border: 1px solid var(--color-line);
+        background: var(--color-paper);
+        color: var(--color-ink-soft);
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        transition: background-color 0.15s, color 0.15s;
+      }
+      .hist-btn:hover {
+        background: var(--color-paper-dark);
+        color: var(--color-ink);
+      }
+    </style>
+
+    <script>
+      document.addEventListener('click', (e) => {
+        const target = e.target;
+        if (!(target instanceof Element)) return;
+
+        const trigger = target.closest('[data-help-target]');
+        if (trigger) {
+          const id = trigger.getAttribute('data-help-target');
+          const dialog = id ? document.getElementById(id) : null;
+          if (dialog instanceof HTMLDialogElement) dialog.showModal();
+          return;
+        }
+
+        const closeBtn = target.closest('[data-help-close]');
+        if (closeBtn) {
+          const dialog = closeBtn.closest('dialog');
+          if (dialog instanceof HTMLDialogElement) dialog.close();
+          return;
+        }
+
+        if (target.tagName === 'DIALOG') {
+          (target as HTMLDialogElement).close();
+        }
+      });
+    </script>
   </body>
 </html>
