@@ -33,6 +33,10 @@ Alternativa: importar o repositório em [vercel.com](https://vercel.com) ou
 [pages.cloudflare.com](https://pages.cloudflare.com) também funciona sem configuração extra
 (nesses hosts o site fica na raiz e o `BASE_PATH` simplesmente não é definido).
 
+> **Guia rápido sem instalar nada:** [POSTAR_AULA.md](./POSTAR_AULA.md) — fluxo IA + editor web
+> do GitHub, ~10 min do conteúdo bruto até a aula no ar. Análise competitiva e roadmap
+> multi-sala em [ANALISE.md](./ANALISE.md).
+
 ## Como adicionar uma aula nova
 
 Cada aula é um arquivo `.mdx` dentro de `src/content/`. Não precisa mexer em nenhuma página — as
