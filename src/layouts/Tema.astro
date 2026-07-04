@@ -83,5 +83,7 @@ const { title, subject, relevance, quickSummary, resources, questions, active, b
     </HelpTip>
   </div>
 
-  <Comentarios slug={slug} accent={active} client:visible />
+  {/* client:idle (não visible): o observer do client:visible não dispara de
+      forma confiável pra ilha no rodapé da página — ficava preso em "carregando". */}
+  <Comentarios slug={slug} accent={active} client:idle />
 </Base>
