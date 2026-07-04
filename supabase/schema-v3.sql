@@ -80,3 +80,32 @@ drop policy if exists "respondidas_delete_proprio" on public.questoes_respondida
 create policy "respondidas_delete_proprio"
   on public.questoes_respondidas for delete
   using (auth.uid() = user_id);
+
+-- ---------------------------------------------------------------------------
+-- Apagar comentário (soft delete) via função com checagem explícita.
+-- Motivo: o PostgREST valida a linha ATUALIZADA contra o policy de SELECT
+-- (RETURNING interno) — e a linha soft-deletada falha em "deleted_at is null",
+-- estourando 42501 mesmo pro dono. A função SECURITY DEFINER contorna isso e
+-- de quebra dá poder de moderação ao coordenador (não só ao ADM).
+-- ---------------------------------------------------------------------------
+create or replace function public.apagar_comentario(p_comment_id uuid)
+returns void
+language plpgsql
+security definer set search_path = public
+as $$
+declare
+  v_owner uuid;
+  v_role text;
+begin
+  select user_id into v_owner from public.comments where id = p_comment_id;
+  if v_owner is null then
+    raise exception 'comentário não encontrado';
+  end if;
+  select role into v_role from public.profiles where id = auth.uid();
+  if auth.uid() = v_owner or v_role in ('adm', 'coordenador') then
+    update public.comments set deleted_at = now() where id = p_comment_id;
+  else
+    raise exception 'sem permissão para apagar este comentário';
+  end if;
+end;
+$$;

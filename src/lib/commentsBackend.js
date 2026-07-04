@@ -202,10 +202,10 @@ const supabaseBackend = {
 
   async deleteComment(slug, id) {
     const sb = getSupabase();
-    const { error } = await sb
-      .from('comments')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', id);
+    // Função SECURITY DEFINER: dono, coordenador ou ADM. (Update direto não
+    // funciona: o RETURNING interno do PostgREST barra a linha soft-deletada
+    // no policy de SELECT — ver supabase/schema-v3.sql.)
+    const { error } = await sb.rpc('apagar_comentario', { p_comment_id: id });
     if (error) return { error: 'Não deu pra apagar. Você só pode apagar os seus próprios comentários.' };
     // avisa os outros clientes na aula (não ecoa pra quem enviou)
     activeChannels.get(slug)?.send({ type: 'broadcast', event: 'mudou', payload: {} });
