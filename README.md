@@ -10,28 +10,26 @@ npm install
 npm run dev       # abre em http://localhost:4321
 ```
 
-## Comentários e login
+## Login, papéis e comentários
 
-Cada aula tem uma seção "Comentários da Turma" com cadastro/login (e-mail + senha + nome de
-usuário único). Sem configuração, ela roda em **modo demonstração**: contas e comentários ficam
-salvos só no navegador, e a primeira conta criada vira ADM — o suficiente pra visualizar tudo.
+O site inteiro fica atrás de login (sem auto-cadastro): coordenadores e ADMs registram as contas
+pela página **/admin**, com senha padrão `nome.sobrenome@ano` que o sistema obriga a trocar no
+primeiro acesso. Papéis: **aluno** (lê e comenta), **coordenador** (posta conteúdo e modera a
+própria sala, registra alunos), **ADM** (tudo). Cada aula tem a seção "Comentários da Turma".
+A especificação completa do produto está em [`PROJETO.md`](./PROJETO.md).
 
-Pra ativar o modo real (banco de dados de verdade, grátis), siga o passo a passo no topo de
-[`supabase/schema.sql`](./supabase/schema.sql): criar projeto no Supabase, rodar o SQL, copiar as
+Setup do banco: rodar [`supabase/schema.sql`](./supabase/schema.sql) e depois
+[`supabase/schema-v2.sql`](./supabase/schema-v2.sql) no SQL Editor do Supabase, e copiar as
 chaves pro `.env` (modelo em [`.env.example`](./.env.example)).
 
-## Colocando no ar (grátis)
+## Colocando no ar
 
-O deploy é automático via **GitHub Pages**: todo push na branch `main` dispara o workflow
-[.github/workflows/deploy.yml](./.github/workflows/deploy.yml), que builda o site e publica em
-**https://bazhish.github.io/caderno-da-turma/**. Nada precisa ser feito manualmente.
+O site agora é **dinâmico (SSR)** — precisa de um host que rode Node (GitHub Pages não serve
+mais). Build: `npm run build`; start: `npm start` (respeita `PORT`/`HOST`). Variáveis de
+ambiente necessárias no host: `PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_ANON_KEY` e `HOST=0.0.0.0`.
 
-O workflow define `BASE_PATH=/caderno-da-turma` porque o GitHub Pages serve o site num
-subcaminho — por isso todo link interno do código passa pelo helper `u()` de `src/lib/url.ts`.
-
-Alternativa: importar o repositório em [vercel.com](https://vercel.com) ou
-[pages.cloudflare.com](https://pages.cloudflare.com) também funciona sem configuração extra
-(nesses hosts o site fica na raiz e o `BASE_PATH` simplesmente não é definido).
+Host em definição: Railway (escolha do dono; plano gratuito esgotado) ou alternativa gratuita
+(Render mantém o adapter Node como está; Vercel/Netlify exigem trocar o adapter).
 
 > **Guia rápido sem instalar nada:** [POSTAR_AULA.md](./POSTAR_AULA.md) — fluxo IA + editor web
 > do GitHub, ~10 min do conteúdo bruto até a aula no ar.
