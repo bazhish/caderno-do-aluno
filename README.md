@@ -24,12 +24,9 @@ chaves pro `.env` (modelo em [`.env.example`](./.env.example)).
 
 ## Colocando no ar
 
-O site agora é **dinâmico (SSR)** — precisa de um host que rode Node (GitHub Pages não serve
-mais). Build: `npm run build`; start: `npm start` (respeita `PORT`/`HOST`). Variáveis de
-ambiente necessárias no host: `PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_ANON_KEY` e `HOST=0.0.0.0`.
-
-Host em definição: Railway (escolha do dono; plano gratuito esgotado) ou alternativa gratuita
-(Render mantém o adapter Node como está; Vercel/Netlify exigem trocar o adapter).
+O site é **dinâmico (SSR)** e está no ar na Vercel (tier gratuito, adapter `@astrojs/vercel`):
+**https://caderno-da-turma.vercel.app** — todo push na `main` redeploya automaticamente.
+Variáveis de ambiente no host: `PUBLIC_SUPABASE_URL` e `PUBLIC_SUPABASE_ANON_KEY`.
 
 > **Guia rápido sem instalar nada:** [POSTAR_AULA.md](./POSTAR_AULA.md) — fluxo IA + editor web
 > do GitHub, ~10 min do conteúdo bruto até a aula no ar.

@@ -38,9 +38,9 @@ Role escalation only happens through SECURITY DEFINER functions in the DB (`prom
 moderation-only RLS, question bank, palavras_bloqueadas) are in
 [supabase/schema-v2.sql](./supabase/schema-v2.sql); both are applied to the live project.
 
-Deploy target is a Node server (adapter `@astrojs/node`, standalone). GitHub Pages was removed —
-it cannot run SSR. Railway was chosen by the owner but its free plan is exhausted (pending
-decision; see README).
+Deployed on Vercel (adapter `@astrojs/vercel`, serverless) at
+https://caderno-da-turma.vercel.app — every push to `main` auto-deploys. GitHub Pages and the
+Node adapter were removed (Pages can't run SSR; Railway's free plan was exhausted).
 
 ## Architecture
 
