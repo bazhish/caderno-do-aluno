@@ -2,6 +2,29 @@
 import Base from '../layouts/Base.astro';
 import HelpTip from '../components/HelpTip.astro';
 import { u } from '../lib/url';
+import { createSupabaseServer, supabaseConfigured } from '../lib/supabaseServer';
+
+// Visão "minha sala": ao logar, o hub destaca a sala do aluno e a área dela.
+// O conteúdo continua aberto — qualquer sala pode navegar em qualquer material.
+const user = Astro.locals.user;
+let salaNome: string | null = null;
+let minhaArea: { href: string; label: string } | null = null;
+if (user?.salaId && supabaseConfigured) {
+  const supabase = createSupabaseServer(Astro);
+  const { data: sala } = await supabase
+    .from('salas')
+    .select('nome, cursos(slug, nome)')
+    .eq('id', user.salaId)
+    .maybeSingle();
+  if (sala) {
+    salaNome = sala.nome;
+    const cursoSlug = (sala.cursos as any)?.slug ?? null;
+    minhaArea =
+      cursoSlug === 'ds'
+        ? { href: '/ds', label: 'ir pra área do seu curso (DS)' }
+        : { href: '/escolar', label: 'ir pras matérias da sua sala' };
+  }
+}
 
 const categories = [
   {
@@ -38,6 +61,24 @@ const categories = [
 ---
 
 <Base title="Início" active="hub" description="Painel central de conteúdo de estudo compartilhado pela turma">
+  {user && (
+    <section class="mb-8 rounded-lg border border-paper-dark bg-white/50 px-5 py-4 flex flex-wrap items-center justify-between gap-3">
+      <p class="font-body text-sm text-ink">
+        Olá, <span class="font-mono font-bold">@{user.username}</span>
+        {salaNome && <span class="text-ink-soft"> · sua sala: <b class="text-ink">{salaNome}</b></span>}
+        {!salaNome && user.role === 'adm' && <span class="text-ink-soft"> · painel do ADM</span>}
+      </p>
+      {minhaArea && (
+        <a
+          href={u(minhaArea.href)}
+          class="font-display font-bold text-sm px-4 py-2 rounded-md text-white bg-ink hover:opacity-90 transition-opacity no-underline"
+        >
+          {minhaArea.label} →
+        </a>
+      )}
+    </section>
+  )}
+
   <section class="mb-12 md:mb-16">
     <div class="flex items-center gap-2 mb-3">
       <p class="font-mono text-xs uppercase tracking-widest text-ink-soft">hub principal</p>

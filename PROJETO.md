@@ -143,7 +143,7 @@ palavras_bloqueadas  (termo)                             → censura automática
 | Fase | Entrega | Status |
 |---|---|---|
 | 0 | Site estático, conteúdo MDX, comentários com Supabase | ✅ feito |
-| **1** | **SSR + login obrigatório (sem auto-cadastro) + primeiro acesso troca senha + papéis no middleware + painel de registro de contas + salas/cursos no banco + deploy Railway** | ✅ esta fase |
-| 2 | Comentários em tempo real + censura automática + quiz com banco de questões sorteadas sem repetição por aluno + visão padrão "minha sala" | próxima |
-| 3 | Formulário de postagem de aula no site (conteúdo migra pro banco) + Pause e Responda + atividades práticas do curso | depois |
+| 1 | SSR + login obrigatório (sem auto-cadastro) + primeiro acesso troca senha + papéis no middleware + painel de registro de contas + salas/cursos no banco + deploy (Vercel) | ✅ feito |
+| 2 | Comentários em tempo real + censura automática (trigger no banco + lista `palavras_bloqueadas`) + quiz com banco de questões sorteadas sem repetição por aluno + visão "minha sala" no hub | ✅ feito |
+| 3 | Formulário de postagem de aula no site (conteúdo migra pro banco) + Pause e Responda + atividades práticas do curso | próxima |
 | 4 | Configurações (tema/fonte), painel ADM completo (troca de senha, métricas), service_role + signup fechado | depois |

@@ -49,6 +49,13 @@ export default function Comentarios({ slug, accent = 'enem' }) {
     };
   }, [refresh]);
 
+  // Tempo real: comentário novo ou moderação em outra aba/dispositivo
+  // atualiza a lista aqui sem recarregar a página.
+  useEffect(() => {
+    const unsubscribe = backend.subscribe(slug, () => refresh());
+    return unsubscribe;
+  }, [slug, refresh]);
+
   async function handleSend(e) {
     e.preventDefault();
     setSendBusy(true);
@@ -64,7 +71,7 @@ export default function Comentarios({ slug, accent = 'enem' }) {
   }
 
   async function handleDelete(id) {
-    const result = await backend.deleteComment(id);
+    const result = await backend.deleteComment(slug, id);
     if (!result.error) await refresh();
   }
 

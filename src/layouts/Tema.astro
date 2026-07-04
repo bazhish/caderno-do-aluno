@@ -68,12 +68,13 @@ const { title, subject, relevance, quickSummary, resources, questions, active, b
 
   <div class="flex items-center gap-2 mt-10 mb-1 not-prose">
     <HelpTip title="Como funciona o Teste de Fogo">
-      Cada questão tem seu próprio botão de corrigir. Responda e corrija uma de cada vez — errou?
-      A explicação aparece na hora, embaixo da própria questão.
+      As questões são sorteadas do banco da aula, só pra você — cada colega recebe um sorteio
+      diferente. Corrija uma de cada vez: a explicação aparece na hora. Ao refazer, só vêm
+      questões que você ainda não respondeu; quando acabar tudo, dá pra recomeçar do zero.
     </HelpTip>
   </div>
 
-  <Quiz questions={questions} accent={active} client:visible />
+  <Quiz questions={questions} accent={active} slug={slug} client:visible />
 
   <div class="flex items-center gap-2 mt-10 mb-1 not-prose">
     <HelpTip title="Como funcionam os comentários">

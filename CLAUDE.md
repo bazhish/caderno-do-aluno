@@ -132,6 +132,25 @@ lesson page through `Tema.astro`. Security invariants: usernames are UNIQUE at t
 (created via the `auth.users` trigger from signup metadata, never client inserts); deletes are
 soft (`deleted_at`); RLS — not the UI — enforces who can write/delete (owner or `adm`).
 
+Comments are **realtime**: new comments arrive via `postgres_changes` INSERT events (the
+`comments` table is in the `supabase_realtime` publication), and moderation deletes are relayed
+via a broadcast on the same `comments:<slug>` channel (soft-deleted rows fail the SELECT RLS so
+their UPDATE events are never delivered — don't "simplify" the broadcast away). Comment bodies
+are censored **in the database** by the `comments_censura` trigger against `palavras_bloqueadas`
+(schema-v3.sql, unaccent + word-boundary regex); the client check in `commentsBackend.js` is
+courtesy UX only.
+
+### Question bank (per-student shuffled quizzes)
+
+`src/lib/quizBackend.js` + `Quiz.jsx`: the quiz draws up to 5 random questions from the
+`questoes` table for the lesson slug, excluding ones the student already answered
+(`questoes_respondidas`, recorded on each "Corrigir" click). Redoing the quiz draws only unseen
+questions; when exhausted, the student can wipe their own history ("Recomeçar do zero" —
+delete-own RLS policy). If the bank is empty or there's no session, the quiz falls back to the
+frontmatter `questions` array without recording. The bank is seeded from MDX frontmatter by
+`scripts/gerar-seed-questoes.mjs` → `supabase/seed-questoes.sql` (destructive per-lesson seed —
+don't rerun after hand-written questions exist).
+
 ### Category accent colors
 
 Each category has a fixed accent color/class trio defined in `src/styles/global.css`

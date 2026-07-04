@@ -36,6 +36,10 @@ const demoBackend = {
     return { data: { user: DEMO_USER } };
   },
 
+  subscribe() {
+    return () => {};
+  },
+
   async listComments(slug) {
     const all = lsGet(LS_COMMENTS, []);
     const list = all
@@ -63,7 +67,7 @@ const demoBackend = {
     return { data: true };
   },
 
-  async deleteComment(id) {
+  async deleteComment(_slug, id) {
     const all = lsGet(LS_COMMENTS, []);
     const comment = all.find((c) => c.id === id);
     if (comment) comment.deleted = true;
@@ -81,6 +85,36 @@ function getSupabase() {
   if (!supabase) supabase = createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   return supabase;
 }
+
+// Censura automática: pré-checagem amigável no navegador. A barreira de
+// verdade é o trigger comments_censura no banco (schema-v3.sql) — aqui é só
+// pra dar a mensagem bonita sem ida ao servidor.
+const MSG_CENSURA =
+  'Seu comentário contém uma palavra bloqueada. Reescreva com respeito 🙂';
+
+let palavrasCache = null;
+async function getPalavrasBloqueadas() {
+  if (!palavrasCache) {
+    const { data } = await getSupabase().from('palavras_bloqueadas').select('termo');
+    palavrasCache = (data ?? []).map((p) => p.termo);
+  }
+  return palavrasCache;
+}
+
+function temPalavraBloqueada(texto, palavras) {
+  const norm = texto
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase();
+  return palavras.some((termo) => {
+    const escapado = termo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`\\b${escapado}\\b`).test(norm);
+  });
+}
+
+// Canais de tempo real ativos, por aula — reusados pra enviar o broadcast de
+// moderação (o soft delete não passa na RLS do postgres_changes).
+const activeChannels = new Map();
 
 const supabaseBackend = {
   async getSession() {
@@ -124,10 +158,33 @@ const supabaseBackend = {
     };
   },
 
+  // Tempo real: comentários novos chegam via postgres_changes; ações de
+  // moderação chegam via broadcast no mesmo canal. Retorna o unsubscribe.
+  subscribe(slug, onChange) {
+    const sb = getSupabase();
+    const channel = sb
+      .channel(`comments:${slug}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'comments', filter: `lesson_slug=eq.${slug}` },
+        onChange
+      )
+      .on('broadcast', { event: 'mudou' }, onChange)
+      .subscribe();
+    activeChannels.set(slug, channel);
+    return () => {
+      activeChannels.delete(slug);
+      sb.removeChannel(channel);
+    };
+  },
+
   async addComment(slug, body) {
     const text = (body ?? '').trim();
     if (!text) return { error: 'Escreva alguma coisa antes de enviar.' };
     if (text.length > 1000) return { error: 'O comentário pode ter no máximo 1000 caracteres.' };
+
+    const palavras = await getPalavrasBloqueadas();
+    if (temPalavraBloqueada(text, palavras)) return { error: MSG_CENSURA };
 
     const sb = getSupabase();
     const { data: auth } = await sb.auth.getSession();
@@ -136,17 +193,22 @@ const supabaseBackend = {
     const { error } = await sb
       .from('comments')
       .insert({ lesson_slug: slug, body: text, user_id: auth.session.user.id });
-    if (error) return { error: 'Não deu pra enviar o comentário. Tente de novo.' };
+    if (error) {
+      if (/PALAVRA_BLOQUEADA/i.test(error.message)) return { error: MSG_CENSURA };
+      return { error: 'Não deu pra enviar o comentário. Tente de novo.' };
+    }
     return { data: true };
   },
 
-  async deleteComment(id) {
+  async deleteComment(slug, id) {
     const sb = getSupabase();
     const { error } = await sb
       .from('comments')
       .update({ deleted_at: new Date().toISOString() })
       .eq('id', id);
     if (error) return { error: 'Não deu pra apagar. Você só pode apagar os seus próprios comentários.' };
+    // avisa os outros clientes na aula (não ecoa pra quem enviou)
+    activeChannels.get(slug)?.send({ type: 'broadcast', event: 'mudou', payload: {} });
     return { data: true };
   },
 };
