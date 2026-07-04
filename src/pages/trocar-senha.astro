@@ -1,0 +1,71 @@
+---
+import Base from '../layouts/Base.astro';
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/login');
+
+const erro = Astro.url.searchParams.get('erro');
+const mensagens: Record<string, string> = {
+  curta: 'A senha precisa de pelo menos 6 caracteres.',
+  diferentes: 'As duas senhas não são iguais.',
+  falha: 'Não deu pra trocar a senha. Tente de novo.',
+};
+const mensagem = erro ? (mensagens[erro] ?? 'Algo deu errado.') : null;
+---
+
+<Base title="Trocar senha">
+  <div class="max-w-md mx-auto">
+    <p class="font-mono text-xs uppercase tracking-widest text-ink-soft mb-2">
+      {user.mustChangePassword ? 'primeiro acesso' : 'segurança'}
+    </p>
+    <h1 class="font-display text-2xl md:text-3xl font-bold text-ink mb-3">
+      {user.mustChangePassword ? `Boas-vindas, @${user.username}!` : 'Trocar senha'}
+    </h1>
+    {user.mustChangePassword && (
+      <p class="font-body text-sm text-ink-soft mb-8 leading-relaxed">
+        Você entrou com a senha padrão. Por segurança, escolha agora uma senha pessoal — só
+        você vai conhecê-la.
+      </p>
+    )}
+
+    <form method="POST" action="/api/auth/trocar-senha" class="flex flex-col gap-4">
+      <label class="block">
+        <span class="font-mono text-[11px] uppercase tracking-wide text-ink-soft block mb-1">
+          Nova senha
+        </span>
+        <input
+          type="password"
+          name="senha"
+          autocomplete="new-password"
+          required
+          minlength="6"
+          placeholder="mínimo 6 caracteres"
+          class="w-full rounded-md border border-paper-dark bg-white/80 px-3 py-2.5 font-body text-sm text-ink focus:outline-none focus:border-ink-soft"
+        />
+      </label>
+
+      <label class="block">
+        <span class="font-mono text-[11px] uppercase tracking-wide text-ink-soft block mb-1">
+          Repita a nova senha
+        </span>
+        <input
+          type="password"
+          name="confirma"
+          autocomplete="new-password"
+          required
+          minlength="6"
+          class="w-full rounded-md border border-paper-dark bg-white/80 px-3 py-2.5 font-body text-sm text-ink focus:outline-none focus:border-ink-soft"
+        />
+      </label>
+
+      {mensagem && <p class="font-body text-xs text-enem leading-relaxed">{mensagem}</p>}
+
+      <button
+        type="submit"
+        class="font-display font-bold text-sm px-5 py-3 rounded-md text-white bg-escolar hover:opacity-90 transition-opacity self-start"
+      >
+        Salvar nova senha
+      </button>
+    </form>
+  </div>
+</Base>

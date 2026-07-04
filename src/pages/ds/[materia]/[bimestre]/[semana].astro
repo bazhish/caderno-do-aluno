@@ -4,19 +4,10 @@ import { getCollection, render } from 'astro:content';
 import { splitSlug, bimestreLabel as bimLabelFn } from '../../../../lib/slug';
 import { u } from '../../../../lib/url';
 
-export async function getStaticPaths() {
-  const entries = await getCollection('ds');
-  return entries.map((e) => {
-    const [materiaSlug, bimestreSlug, semanaSlug] = splitSlug(e.id);
-    return {
-      params: { materia: materiaSlug, bimestre: bimestreSlug, semana: semanaSlug },
-      props: { entry: e },
-    };
-  });
-}
-
-const { materia, bimestre } = Astro.params;
-const { entry } = Astro.props;
+const { materia, bimestre, semana } = Astro.params;
+const entries = await getCollection('ds');
+const entry = entries.find((e) => e.id === `${materia}/${bimestre}/${semana}`);
+if (!entry) return Astro.redirect(u('/ds'));
 const { Content } = await render(entry);
 const subjectLabel = entry.data.subject;
 ---

@@ -4,13 +4,13 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
+import node from '@astrojs/node';
 
-// BASE_PATH/SITE_URL são definidos pelo workflow de deploy (GitHub Pages serve
-// o site em /caderno-da-turma). Localmente e em hosts na raiz ficam vazios.
-// https://astro.build/config
+// Modo servidor (SSR): login e permissões são checados por requisição no
+// middleware. Deploy no Railway (Node standalone). https://astro.build/config
 export default defineConfig({
-  site: process.env.SITE_URL || undefined,
-  base: process.env.BASE_PATH || undefined,
+  output: 'server',
+  adapter: node({ mode: 'standalone' }),
 
   integrations: [react(), mdx()],
 

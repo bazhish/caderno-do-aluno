@@ -4,17 +4,10 @@ import { getCollection } from 'astro:content';
 import { buildMateriaBimestreTree } from '../../../lib/slug';
 import { u } from '../../../lib/url';
 
-export async function getStaticPaths() {
-  const entries = await getCollection('ds');
-  const tree = buildMateriaBimestreTree(entries);
-  return [...tree.entries()].map(([materiaSlug, materia]) => ({
-    params: { materia: materiaSlug },
-    props: { materia },
-  }));
-}
-
 const { materia: materiaSlug } = Astro.params;
-const { materia } = Astro.props;
+const tree = buildMateriaBimestreTree(await getCollection('ds'));
+const materia = materiaSlug ? tree.get(materiaSlug) : undefined;
+if (!materia) return Astro.redirect(u('/ds'));
 const bimestres = [...materia.bimestres.values()].sort((a, b) => a.slug.localeCompare(b.slug));
 ---
 

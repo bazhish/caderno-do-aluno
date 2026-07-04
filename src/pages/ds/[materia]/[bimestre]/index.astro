@@ -4,23 +4,14 @@ import { getCollection } from 'astro:content';
 import { buildMateriaBimestreTree, splitSlug, semanaLabel } from '../../../../lib/slug';
 import { u } from '../../../../lib/url';
 
-export async function getStaticPaths() {
-  const entries = await getCollection('ds');
-  const tree = buildMateriaBimestreTree(entries);
-  const paths = [];
-  for (const [materiaSlug, materia] of tree.entries()) {
-    for (const [bimestreSlug, bim] of materia.bimestres.entries()) {
-      paths.push({
-        params: { materia: materiaSlug, bimestre: bimestreSlug },
-        props: { materiaLabel: materia.label, materiaSlug, bimestreLabel: bim.label, semanas: bim.semanas },
-      });
-    }
-  }
-  return paths;
-}
-
 const { materia, bimestre } = Astro.params;
-const { materiaLabel, bimestreLabel, semanas } = Astro.props;
+const tree = buildMateriaBimestreTree(await getCollection('ds'));
+const materiaNode = materia ? tree.get(materia) : undefined;
+const bim = bimestre ? materiaNode?.bimestres.get(bimestre) : undefined;
+if (!materiaNode || !bim) return Astro.redirect(u('/ds'));
+const materiaLabel = materiaNode.label;
+const bimestreLabel = bim.label;
+const semanas = bim.semanas;
 ---
 
 <Base title={`${materiaLabel} · ${bimestreLabel}`} active="ds" description={`Semanas de ${materiaLabel}, ${bimestreLabel}`}>

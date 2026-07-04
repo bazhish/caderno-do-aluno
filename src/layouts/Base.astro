@@ -9,6 +9,7 @@ interface Props {
   description?: string;
 }
 const { title, active = null, description = 'Central de conteúdo da turma' } = Astro.props;
+const user = Astro.locals.user;
 
 // A borda da folha segue a cor da aba ativa (o hub usa o mesmo "preto" da aba Início).
 const accentByTab: Record<string, string> = {
@@ -46,7 +47,25 @@ const borderColor = active ? accentByTab[active] : 'var(--color-line)';
             Caderno da Turma<span style="color: var(--color-enem)">.</span>
           </a>
         </div>
-        <span class="font-mono text-xs text-ink-soft hidden md:inline">Feito por alunos, para alunos</span>
+        {user ? (
+          <div class="flex items-center gap-2">
+            {(user.role === 'adm' || user.role === 'coordenador') && (
+              <a
+                href="/admin"
+                class="font-mono text-[11px] font-bold uppercase tracking-wide bg-ink text-paper rounded-full px-2.5 py-1 no-underline hover:opacity-85"
+              >gestão</a>
+            )}
+            <span class="font-mono text-xs text-ink-soft hidden sm:inline">@{user.username}</span>
+            <form method="POST" action="/api/auth/logout">
+              <button
+                type="submit"
+                class="font-mono text-[11px] text-ink-soft hover:text-ink underline underline-offset-2"
+              >sair</button>
+            </form>
+          </div>
+        ) : (
+          <span class="font-mono text-xs text-ink-soft hidden md:inline">Feito por alunos, para alunos</span>
+        )}
       </div>
       <div class="max-w-5xl mx-auto w-full mt-5 sm:mt-6">
         <TabNav active={active} />

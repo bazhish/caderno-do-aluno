@@ -4,22 +4,12 @@ import { getCollection } from 'astro:content';
 import { splitSlug } from '../../../lib/slug';
 import { u } from '../../../lib/url';
 
-export async function getStaticPaths() {
-  const entries = await getCollection('enem');
-  const byMateria = new Map<string, typeof entries>();
-  for (const e of entries) {
-    const [materiaSlug] = splitSlug(e.id);
-    if (!byMateria.has(materiaSlug)) byMateria.set(materiaSlug, []);
-    byMateria.get(materiaSlug)!.push(e);
-  }
-  return [...byMateria.entries()].map(([materiaSlug, temas]) => ({
-    params: { materia: materiaSlug },
-    props: { temas: temas.sort((a, b) => a.data.order - b.data.order) },
-  }));
-}
-
 const { materia } = Astro.params;
-const { temas } = Astro.props;
+const entries = await getCollection('enem');
+const temas = entries
+  .filter((e) => splitSlug(e.id)[0] === materia)
+  .sort((a, b) => a.data.order - b.data.order);
+if (temas.length === 0) return Astro.redirect(u('/enem'));
 const subjectLabel = temas[0]?.data.subject ?? materia;
 ---
 

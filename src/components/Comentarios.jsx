@@ -26,15 +26,6 @@ export default function Comentarios({ slug, accent = 'enem' }) {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // formulário de auth
-  const [mode, setMode] = useState('login'); // 'login' | 'signup'
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const [authError, setAuthError] = useState(null);
-  const [authBusy, setAuthBusy] = useState(false);
-
-  // composer
   const [body, setBody] = useState('');
   const [sendError, setSendError] = useState(null);
   const [sendBusy, setSendBusy] = useState(false);
@@ -58,30 +49,6 @@ export default function Comentarios({ slug, accent = 'enem' }) {
     };
   }, [refresh]);
 
-  async function handleAuth(e) {
-    e.preventDefault();
-    setAuthBusy(true);
-    setAuthError(null);
-    const result =
-      mode === 'signup'
-        ? await backend.signUp({ email, password, username })
-        : await backend.signIn({ email, password });
-    setAuthBusy(false);
-    if (result.error) {
-      setAuthError(result.error);
-      return;
-    }
-    setSession(result.data);
-    setEmail('');
-    setPassword('');
-    setUsername('');
-  }
-
-  async function handleSignOut() {
-    await backend.signOut();
-    setSession(null);
-  }
-
   async function handleSend(e) {
     e.preventDefault();
     setSendBusy(true);
@@ -101,7 +68,7 @@ export default function Comentarios({ slug, accent = 'enem' }) {
     if (!result.error) await refresh();
   }
 
-  const isAdm = session?.user?.role === 'adm';
+  const isModerador = session?.user?.role === 'adm' || session?.user?.role === 'coordenador';
 
   return (
     <div className="not-prose my-10 border-t-2 border-line pt-8">
@@ -123,14 +90,11 @@ export default function Comentarios({ slug, accent = 'enem' }) {
             🔌 Modo demonstração
           </p>
           <p className="font-body text-xs text-ink-soft leading-relaxed">
-            Sem banco de dados conectado: contas e comentários ficam salvos só neste navegador. A
-            primeira conta criada vira ADM (pra testar a moderação). Pra ativar o modo real, siga o
-            passo a passo em <code>supabase/schema.sql</code>.
+            Sem banco conectado: comentários ficam salvos só neste navegador, como @demo.
           </p>
         </div>
       )}
 
-      {/* Lista de comentários */}
       {loading ? (
         <p className="font-mono text-xs text-ink-soft mb-6">carregando…</p>
       ) : comments.length === 0 ? (
@@ -140,7 +104,7 @@ export default function Comentarios({ slug, accent = 'enem' }) {
       ) : (
         <ul className="space-y-3 mb-6 list-none p-0 m-0">
           {comments.map((c) => {
-            const canDelete = session && (session.user.id === c.user_id || isAdm);
+            const canDelete = session && (session.user.id === c.user_id || isModerador);
             return (
               <li key={c.id} className="rounded-md border border-paper-dark bg-white/50 px-4 py-3">
                 <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 mb-1">
@@ -148,6 +112,11 @@ export default function Comentarios({ slug, accent = 'enem' }) {
                   {c.role === 'adm' && (
                     <span className="font-mono text-[10px] font-bold uppercase tracking-wide bg-ink text-paper rounded-full px-2 py-0.5">
                       ADM
+                    </span>
+                  )}
+                  {c.role === 'coordenador' && (
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-wide bg-escolar-soft text-escolar rounded-full px-2 py-0.5">
+                      COORD
                     </span>
                   )}
                   <span className="font-mono text-[11px] text-ink-soft">{formatarData(c.created_at)}</span>
@@ -168,127 +137,51 @@ export default function Comentarios({ slug, accent = 'enem' }) {
         </ul>
       )}
 
-      {/* Composer ou login */}
-      {session ? (
-        <form onSubmit={handleSend} className="rounded-lg border border-paper-dark bg-white/60 p-4">
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className={`font-mono text-xs font-bold ${accentText}`}>@{session.user.username}</span>
-            {isAdm && (
-              <span className="font-mono text-[10px] font-bold uppercase tracking-wide bg-ink text-paper rounded-full px-2 py-0.5">
-                ADM
-              </span>
-            )}
-            <button
-              type="button"
-              onClick={handleSignOut}
-              className="ml-auto font-mono text-[11px] text-ink-soft hover:text-ink underline underline-offset-2"
-            >
-              sair
-            </button>
-          </div>
-          <textarea
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            maxLength={1000}
-            rows={3}
-            placeholder="Escreva sua dúvida ou dica sobre esta aula…"
-            className="w-full rounded-md border border-paper-dark bg-white/80 px-3 py-2 font-body text-sm text-ink placeholder:text-ink-soft/70 focus:outline-none focus:border-ink-soft resize-y"
-          />
-          <div className="flex flex-wrap items-center gap-3 mt-2">
-            <button
-              type="submit"
-              disabled={sendBusy || !body.trim()}
-              className={`font-display font-bold text-sm px-5 py-2.5 rounded-md text-white ${accentBg} disabled:opacity-30 disabled:cursor-not-allowed transition-opacity`}
-            >
-              {sendBusy ? 'Enviando…' : 'Comentar'}
-            </button>
-            <span className="font-mono text-[11px] text-ink-soft">{body.length}/1000</span>
-            {sendError && <span className="font-body text-xs text-enem">{sendError}</span>}
-          </div>
-        </form>
-      ) : (
-        !loading && (
-          <form onSubmit={handleAuth} className="rounded-lg border border-paper-dark bg-white/60 p-4 max-w-md">
-            <div className="flex gap-2 mb-4">
-              <button
-                type="button"
-                onClick={() => { setMode('login'); setAuthError(null); }}
-                className={`font-display font-bold text-sm px-4 py-2 rounded-md border-2 transition-colors ${
-                  mode === 'login' ? `${accentBg} border-transparent text-white` : 'border-paper-dark text-ink-soft hover:text-ink'
-                }`}
-              >
-                Entrar
-              </button>
-              <button
-                type="button"
-                onClick={() => { setMode('signup'); setAuthError(null); }}
-                className={`font-display font-bold text-sm px-4 py-2 rounded-md border-2 transition-colors ${
-                  mode === 'signup' ? `${accentBg} border-transparent text-white` : 'border-paper-dark text-ink-soft hover:text-ink'
-                }`}
-              >
-                Criar conta
-              </button>
-            </div>
-
-            {mode === 'signup' && (
-              <label className="block mb-3">
-                <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft block mb-1">
-                  Nome de usuário
+      {!loading &&
+        (session ? (
+          <form onSubmit={handleSend} className="rounded-lg border border-paper-dark bg-white/60 p-4">
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className={`font-mono text-xs font-bold ${accentText}`}>@{session.user.username}</span>
+              {session.user.role === 'adm' && (
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wide bg-ink text-paper rounded-full px-2 py-0.5">
+                  ADM
                 </span>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="ex: joao-silva"
-                  autoComplete="username"
-                  className="w-full rounded-md border border-paper-dark bg-white/80 px-3 py-2 font-body text-sm text-ink focus:outline-none focus:border-ink-soft"
-                />
-              </label>
-            )}
-
-            <label className="block mb-3">
-              <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft block mb-1">E-mail</span>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="voce@exemplo.com"
-                autoComplete="email"
-                required
-                className="w-full rounded-md border border-paper-dark bg-white/80 px-3 py-2 font-body text-sm text-ink focus:outline-none focus:border-ink-soft"
-              />
-            </label>
-
-            <label className="block mb-4">
-              <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft block mb-1">Senha</span>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="mínimo 6 caracteres"
-                autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                required
-                className="w-full rounded-md border border-paper-dark bg-white/80 px-3 py-2 font-body text-sm text-ink focus:outline-none focus:border-ink-soft"
-              />
-            </label>
-
-            <button
-              type="submit"
-              disabled={authBusy}
-              className={`font-display font-bold text-sm px-5 py-2.5 rounded-md text-white ${accentBg} disabled:opacity-40 transition-opacity`}
-            >
-              {authBusy ? 'Aguarde…' : mode === 'signup' ? 'Criar conta e entrar' : 'Entrar'}
-            </button>
-
-            {authError && <p className="font-body text-xs text-enem mt-3 leading-relaxed">{authError}</p>}
-
-            <p className="font-body text-[11px] text-ink-soft mt-4 leading-relaxed">
-              Só pedimos e-mail e nome de usuário — nada de nome completo. Qualquer pessoa pode ler
-              os comentários; só precisa de conta pra escrever.
-            </p>
+              )}
+              {session.user.role === 'coordenador' && (
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wide bg-escolar-soft text-escolar rounded-full px-2 py-0.5">
+                  COORD
+                </span>
+              )}
+            </div>
+            <textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              maxLength={1000}
+              rows={3}
+              placeholder="Escreva sua dúvida ou dica sobre esta aula…"
+              className="w-full rounded-md border border-paper-dark bg-white/80 px-3 py-2 font-body text-sm text-ink placeholder:text-ink-soft/70 focus:outline-none focus:border-ink-soft resize-y"
+            />
+            <div className="flex flex-wrap items-center gap-3 mt-2">
+              <button
+                type="submit"
+                disabled={sendBusy || !body.trim()}
+                className={`font-display font-bold text-sm px-5 py-2.5 rounded-md text-white ${accentBg} disabled:opacity-30 disabled:cursor-not-allowed transition-opacity`}
+              >
+                {sendBusy ? 'Enviando…' : 'Comentar'}
+              </button>
+              <span className="font-mono text-[11px] text-ink-soft">{body.length}/1000</span>
+              {sendError && <span className="font-body text-xs text-enem">{sendError}</span>}
+            </div>
           </form>
-        )
-      )}
+        ) : (
+          <p className="font-body text-sm text-ink-soft rounded-md border border-paper-dark bg-white/40 px-4 py-4">
+            Sua sessão não foi encontrada —{' '}
+            <a href="/login" className="underline underline-offset-2 hover:text-ink">
+              entre de novo
+            </a>{' '}
+            pra comentar.
+          </p>
+        ))}
     </div>
   );
 }

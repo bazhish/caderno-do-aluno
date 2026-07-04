@@ -1,0 +1,90 @@
+---
+import '../styles/global.css';
+
+const erro = Astro.url.searchParams.get('erro');
+const mensagens: Record<string, string> = {
+  campos: 'Preencha o nome de usuário e a senha.',
+  credenciais: 'Usuário ou senha incorretos. Confira com seu coordenador.',
+};
+const mensagem = erro ? (mensagens[erro] ?? 'Algo deu errado. Tente de novo.') : null;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Entre no Caderno da Turma" />
+    <title>Entrar · Caderno da Turma</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Literata:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen flex items-center justify-center px-4">
+    <main class="w-full max-w-sm">
+      <h1 class="font-display font-bold text-2xl text-black text-center mb-1">
+        Caderno da Turma<span style="color: var(--color-enem)">.</span>
+      </h1>
+      <p class="font-mono text-xs text-ink-soft text-center mb-8">Feito por alunos, para alunos</p>
+
+      <form
+        method="POST"
+        action="/api/auth/login"
+        class="paper-card rounded-lg p-6 flex flex-col gap-4"
+      >
+        <label class="block">
+          <span class="font-mono text-[11px] uppercase tracking-wide text-ink-soft block mb-1">
+            Nome de usuário
+          </span>
+          <input
+            type="text"
+            name="username"
+            placeholder="ex: joao.s.3dsa"
+            autocomplete="username"
+            required
+            autofocus
+            class="w-full rounded-md border border-paper-dark bg-white/80 px-3 py-2.5 font-body text-sm text-ink focus:outline-none focus:border-ink-soft"
+          />
+        </label>
+
+        <label class="block">
+          <span class="font-mono text-[11px] uppercase tracking-wide text-ink-soft block mb-1">
+            Senha
+          </span>
+          <input
+            type="password"
+            name="password"
+            autocomplete="current-password"
+            required
+            class="w-full rounded-md border border-paper-dark bg-white/80 px-3 py-2.5 font-body text-sm text-ink focus:outline-none focus:border-ink-soft"
+          />
+        </label>
+
+        {mensagem && <p class="font-body text-xs text-enem leading-relaxed">{mensagem}</p>}
+
+        <button
+          type="submit"
+          class="font-display font-bold text-sm px-5 py-3 rounded-md text-white bg-enem hover:opacity-90 transition-opacity"
+        >
+          Entrar
+        </button>
+
+        <p class="font-body text-[11px] text-ink-soft leading-relaxed">
+          Não tem conta? O coordenador da sua sala registra você. No primeiro acesso, use a
+          senha padrão que ele te passar — o sistema vai pedir pra você trocar.
+        </p>
+      </form>
+    </main>
+
+    <style>
+      .paper-card {
+        background: color-mix(in srgb, var(--color-paper) 92%, white);
+        border: 2px solid var(--color-line);
+        box-shadow: 0 10px 30px rgba(31, 42, 68, 0.08);
+      }
+    </style>
+  </body>
+</html>
