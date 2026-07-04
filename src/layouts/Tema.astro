@@ -74,7 +74,9 @@ const { title, subject, relevance, quickSummary, resources, questions, active, b
     </HelpTip>
   </div>
 
-  <Quiz questions={questions} accent={active} slug={slug} client:visible />
+  {/* client:idle: mesmo motivo dos comentários — o observer do client:visible
+      não dispara de forma confiável nas ilhas mais abaixo da página. */}
+  <Quiz questions={questions} accent={active} slug={slug} client:idle />
 
   <div class="flex items-center gap-2 mt-10 mb-1 not-prose">
     <HelpTip title="Como funcionam os comentários">
