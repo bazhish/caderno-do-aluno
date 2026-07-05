@@ -1,11 +1,11 @@
 ---
 import Base from '../../../layouts/Base.astro';
-import { getCollection } from 'astro:content';
 import { buildMateriaBimestreTree } from '../../../lib/slug';
 import { u } from '../../../lib/url';
+import { listarEntradas } from '../../../lib/lessonsRepo';
 
 const { materia: materiaSlug } = Astro.params;
-const tree = buildMateriaBimestreTree(await getCollection('ds'));
+const tree = buildMateriaBimestreTree(await listarEntradas(Astro, 'ds'));
 const materia = materiaSlug ? tree.get(materiaSlug) : undefined;
 if (!materia) return Astro.redirect(u('/ds'));
 const bimestres = [...materia.bimestres.values()].sort((a, b) => a.slug.localeCompare(b.slug));

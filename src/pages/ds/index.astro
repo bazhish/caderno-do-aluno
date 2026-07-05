@@ -1,11 +1,11 @@
 ---
 import Base from '../../layouts/Base.astro';
 import HelpTip from '../../components/HelpTip.astro';
-import { getCollection } from 'astro:content';
 import { buildMateriaBimestreTree } from '../../lib/slug';
 import { u } from '../../lib/url';
+import { listarEntradas } from '../../lib/lessonsRepo';
 
-const entries = await getCollection('ds');
+const entries = await listarEntradas(Astro, 'ds');
 const tree = buildMateriaBimestreTree(entries);
 const materias = [...tree.values()].sort((a, b) => a.label.localeCompare(b.label));
 ---

@@ -44,6 +44,29 @@ Node adapter were removed (Pages can't run SSR; Railway's free plan was exhauste
 
 ## Architecture
 
+### Lessons: dual-source (DB + legacy MDX)
+
+Lessons live in two places and `src/lib/lessonsRepo.ts` unifies them: the `lessons` table
+(posted via `/admin/aulas/nova`, markdown body rendered server-side by `marked` with raw HTML
+escaped before parsing — XSS guard) and the legacy `.mdx` collections in the repo. Listing pages
+call `listarEntradas(Astro, categoria)` (returns getCollection-shaped entries; DB wins slug
+collisions); leaf pages call `buscarAulaDb()` first and fall back to the MDX entry. Posting API
+is `POST /api/aulas/salvar` (create/edit; slug-forming fields are locked on edit — renaming
+would orphan comments/questions; question replacement is opt-in because it cascades student
+history) and `POST /api/aulas/excluir`. DS lessons can carry `atividades` (free-text practice
+scripts, rendered after the quiz); DS uses the "Pause e Responda" quiz title and draws 1
+question instead of 5 (see `quizTitulo`/`quizSorteio` in `Tema.astro`).
+
+### User settings (theme/font)
+
+`/configuracoes` stores `cdt:tema` (claro/escuro) and `cdt:fonte` (classica/moderna) in
+localStorage; an `is:inline` script in `Base.astro`'s head applies `data-tema`/`data-fonte` on
+`<html>` before first paint. Dark palette + Tailwind `bg-white/*` overrides live in
+`global.css`. Server APIs that need privileges (`/api/usuarios/redefinir-senha`, and
+`/api/usuarios/criar` when available) use `SUPABASE_SERVICE_ROLE_KEY` from server env — never
+expose it as PUBLIC_; without it they fall back (criar → gated public signup; redefinir → 501
+with instructions).
+
 ### Content-driven routing
 
 Each lesson is one `.mdx` file under `src/content/`. There is no manual page authoring per lesson —

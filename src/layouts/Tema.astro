@@ -19,8 +19,28 @@ interface Props {
   active: 'enem' | 'escolar' | 'ds';
   breadcrumb: Crumb[];
   slug: string;
+  // Aulas do banco chegam já renderizadas (markdown → HTML); aulas .mdx usam o <slot />.
+  bodyHtml?: string;
+  atividades?: { titulo: string; roteiroHtml: string }[];
 }
-const { title, subject, relevance, quickSummary, resources, questions, active, breadcrumb, slug } = Astro.props;
+const {
+  title,
+  subject,
+  relevance,
+  quickSummary,
+  resources,
+  questions,
+  active,
+  breadcrumb,
+  slug,
+  bodyHtml,
+  atividades = [],
+} = Astro.props;
+
+// Curso técnico usa "Pause e Responda": 1 questão sorteada por aula.
+// ENEM e Regular usam o "Teste de Fogo" com 5.
+const quizTitulo = active === 'ds' ? 'Pause e Responda' : 'Teste de Fogo';
+const quizSorteio = active === 'ds' ? 1 : 5;
 ---
 
 <Base title={title} active={active} description={relevance}>
@@ -60,33 +80,62 @@ const { title, subject, relevance, quickSummary, resources, questions, active, b
     <p class="font-body text-ink leading-relaxed">{relevance}</p>
   </section>
 
-  <article class="prose prose-tema max-w-none">
-    <slot />
-  </article>
+  {bodyHtml ? (
+    <article class="prose prose-tema max-w-none" set:html={bodyHtml} />
+  ) : (
+    <article class="prose prose-tema max-w-none">
+      <slot />
+    </article>
+  )}
 
   <Recursos resources={resources} accent={active} />
 
   <div class="flex items-center gap-2 mt-10 mb-1 not-prose">
-    <HelpTip title="Como funciona o Teste de Fogo">
+    <HelpTip title={`Como funciona o ${quizTitulo}`}>
       As questões são sorteadas do banco da aula, só pra você — cada colega recebe um sorteio
       diferente. Corrija uma de cada vez: a explicação aparece na hora. Ao refazer, só vêm
       questões que você ainda não respondeu; quando acabar tudo, dá pra recomeçar do zero.
     </HelpTip>
   </div>
 
-  {/* client:idle: mesmo motivo dos comentários — o observer do client:visible
-      não dispara de forma confiável nas ilhas mais abaixo da página. */}
-  <Quiz questions={questions} accent={active} slug={slug} client:idle />
+  {/* client:idle: o observer do client:visible não dispara de forma confiável
+      nas ilhas mais abaixo da página. */}
+  <Quiz
+    questions={questions}
+    accent={active}
+    slug={slug}
+    titulo={quizTitulo}
+    sortear={quizSorteio}
+    client:idle
+  />
+
+  {atividades.length > 0 && (
+    <section class="not-prose my-10 border-t-2 border-line pt-8">
+      <h3 class="font-display text-xl md:text-2xl font-bold text-ink mb-1">Atividades Práticas</h3>
+      <p class="font-body text-sm text-ink-soft mb-6">
+        Roteiros pra colocar a mão na massa. Sem correção automática e sem gabarito — siga as
+        instruções no seu ritmo e tire dúvidas nos comentários.
+      </p>
+      <div class="space-y-5">
+        {atividades.map((a, i) => (
+          <div class="rounded-lg border border-paper-dark bg-white/50 p-5">
+            <p class="font-mono text-xs font-bold uppercase tracking-wide mb-2" style={`color: var(--color-${active})`}>
+              🛠️ Atividade {i + 1} · {a.titulo}
+            </p>
+            <div class="prose prose-tema max-w-none text-sm" set:html={a.roteiroHtml} />
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
 
   <div class="flex items-center gap-2 mt-10 mb-1 not-prose">
     <HelpTip title="Como funcionam os comentários">
-      Qualquer pessoa pode ler os comentários. Pra escrever, crie uma conta com e-mail e um nome
-      de usuário (único, sem repetir). Você pode apagar o que você mesmo escreveu; os ADMs podem
-      apagar qualquer comentário pra manter o espaço saudável.
+      Os comentários atualizam em tempo real e valem pra aula inteira. Você pode apagar o que
+      você mesmo escreveu; coordenadores e ADMs moderam o espaço. Palavrões e termos
+      preconceituosos são bloqueados automaticamente.
     </HelpTip>
   </div>
 
-  {/* client:idle (não visible): o observer do client:visible não dispara de
-      forma confiável pra ilha no rodapé da página — ficava preso em "carregando". */}
   <Comentarios slug={slug} accent={active} client:idle />
 </Base>

@@ -1,11 +1,11 @@
 ---
 import Base from '../../../layouts/Base.astro';
-import { getCollection } from 'astro:content';
 import { splitSlug } from '../../../lib/slug';
 import { u } from '../../../lib/url';
+import { listarEntradas } from '../../../lib/lessonsRepo';
 
 const { materia } = Astro.params;
-const entries = await getCollection('enem');
+const entries = await listarEntradas(Astro, 'enem');
 const temas = entries
   .filter((e) => splitSlug(e.id)[0] === materia)
   .sort((a, b) => a.data.order - b.data.order);

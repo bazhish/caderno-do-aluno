@@ -1,9 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
 import HelpTip from '../../components/HelpTip.astro';
-import { getCollection } from 'astro:content';
 import { splitSlug } from '../../lib/slug';
 import { u } from '../../lib/url';
+import { listarEntradas } from '../../lib/lessonsRepo';
 
 // As 4 áreas oficiais do ENEM. Toda matéria listada aqui aparece na página,
 // mesmo sem conteúdo publicado ainda (estado vazio padronizado).
@@ -41,7 +41,7 @@ const ENEM_AREAS = [
   },
 ];
 
-const entries = await getCollection('enem');
+const entries = await listarEntradas(Astro, 'enem');
 const countBySlug = new Map<string, number>();
 for (const e of entries) {
   const [materiaSlug] = splitSlug(e.id);

@@ -13,7 +13,7 @@ const ACCENTS = {
 
 const SORTEIO_PADRAO = 5;
 
-export default function Quiz({ questions, accent = 'enem', slug }) {
+export default function Quiz({ questions, accent = 'enem', slug, titulo = 'Teste de Fogo', sortear: quantidade = SORTEIO_PADRAO }) {
   // modo: carregando | banco (sorteio do banco) | fallback (frontmatter) | esgotado
   const [modo, setModo] = useState('carregando');
   const [sorteadas, setSorteadas] = useState([]);
@@ -26,7 +26,7 @@ export default function Quiz({ questions, accent = 'enem', slug }) {
     setModo('carregando');
     setAnswers({});
     setCorrected({});
-    const r = await quizBank.sortear(slug, SORTEIO_PADRAO);
+    const r = await quizBank.sortear(slug, quantidade);
     if (r.modo === 'banco') {
       setSorteadas(r.questoes);
       setInfo({ naoRespondidas: r.naoRespondidas, total: r.total });
@@ -34,7 +34,7 @@ export default function Quiz({ questions, accent = 'enem', slug }) {
       setInfo({ naoRespondidas: 0, total: r.total });
     }
     setModo(r.modo);
-  }, [slug]);
+  }, [slug, quantidade]);
 
   useEffect(() => {
     sortear();
@@ -86,7 +86,7 @@ export default function Quiz({ questions, accent = 'enem', slug }) {
   if (modo === 'carregando') {
     return (
       <div className="not-prose my-10 border-t-2 border-line pt-8">
-        <h3 className="font-display text-xl md:text-2xl font-bold text-ink mb-2">Teste de Fogo</h3>
+        <h3 className="font-display text-xl md:text-2xl font-bold text-ink mb-2">{titulo}</h3>
         <p className="font-mono text-xs text-ink-soft">sorteando suas questões…</p>
       </div>
     );
@@ -95,7 +95,7 @@ export default function Quiz({ questions, accent = 'enem', slug }) {
   if (modo === 'esgotado') {
     return (
       <div className="not-prose my-10 border-t-2 border-line pt-8">
-        <h3 className="font-display text-xl md:text-2xl font-bold text-ink mb-6">Teste de Fogo</h3>
+        <h3 className="font-display text-xl md:text-2xl font-bold text-ink mb-6">{titulo}</h3>
         <div className="rounded-lg border border-paper-dark bg-white/50 px-5 py-8 text-center">
           <p className="font-display text-lg font-bold text-ink mb-2">
             Você já respondeu todas as {info.total} questões desta aula! 🎉
@@ -115,12 +115,15 @@ export default function Quiz({ questions, accent = 'enem', slug }) {
     );
   }
 
+  // aula sem nenhuma questão (nem banco, nem frontmatter): não renderiza a seção
+  if (modo === 'fallback' && (!questions || questions.length === 0)) {
+    return null;
+  }
+
   return (
     <div className="not-prose my-10 border-t-2 border-line pt-8">
       <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2">
-        <h3 className="font-display text-xl md:text-2xl font-bold text-ink">
-          Teste de Fogo
-        </h3>
+        <h3 className="font-display text-xl md:text-2xl font-bold text-ink">{titulo}</h3>
         {correctedCount > 0 && (
           <span className="font-mono text-sm text-ink-soft">
             {correctCount} / {correctedCount} corrigidas corretas

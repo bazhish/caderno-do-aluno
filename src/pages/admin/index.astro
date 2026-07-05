@@ -9,7 +9,7 @@ if (!user || (user.role !== 'adm' && user.role !== 'coordenador')) {
 const isAdm = user.role === 'adm';
 
 const supabase = createSupabaseServer(Astro);
-const [{ data: salas }, { data: cursos }, { data: perfis }, { data: privados }] =
+const [{ data: salas }, { data: cursos }, { data: perfis }, { data: privados }, { data: aulas }, metricasRes] =
   await Promise.all([
     supabase.from('salas').select('id, nome, ano').order('nome'),
     supabase.from('cursos').select('slug, nome').order('nome'),
@@ -19,11 +19,26 @@ const [{ data: salas }, { data: cursos }, { data: perfis }, { data: privados }] 
       .order('created_at', { ascending: false })
       .limit(200),
     supabase.from('profiles_privados').select('user_id, nome_completo'),
+    supabase
+      .from('lessons')
+      .select('slug, title, categoria, status, updated_at')
+      .order('updated_at', { ascending: false })
+      .limit(100),
+    supabase.rpc('metricas_admin'),
   ]);
 
+const metricas: Record<string, number> | null = metricasRes.error ? null : metricasRes.data;
 const nomePorId = new Map((privados ?? []).map((p) => [p.user_id, p.nome_completo]));
 const salaPorId = new Map((salas ?? []).map((s) => [s.id, s.nome]));
 const minhaSala = user.salaId ? (salaPorId.get(user.salaId) ?? '—') : null;
+
+const rotulosMetricas: [string, string][] = [
+  ['usuarios', 'contas'],
+  ['aulas_no_banco', 'aulas postadas'],
+  ['questoes', 'questões no banco'],
+  ['comentarios', 'comentários'],
+  ['respostas_registradas', 'respostas de quiz'],
+];
 ---
 
 <Base title="Gestão">
@@ -31,6 +46,57 @@ const minhaSala = user.salaId ? (salaPorId.get(user.salaId) ?? '—') : null;
     painel de gestão · {isAdm ? 'ADM' : `coordenador ${minhaSala ? `· ${minhaSala}` : ''}`}
   </p>
   <h1 class="font-display text-3xl md:text-4xl font-bold text-ink mb-10">Gestão da turma</h1>
+
+  {metricas && (
+    <section class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-12">
+      {rotulosMetricas.map(([chave, rotulo]) => (
+        <div class="rounded-lg border border-paper-dark bg-white/50 px-4 py-3 text-center">
+          <p class="font-display text-2xl font-bold text-ink">{metricas[chave] ?? 0}</p>
+          <p class="font-mono text-[10px] uppercase tracking-wide text-ink-soft">{rotulo}</p>
+        </div>
+      ))}
+    </section>
+  )}
+
+  <section class="mb-12">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <h2 class="font-display text-lg font-bold text-ink">
+        Aulas postadas pelo site <span class="font-mono text-xs text-ink-soft">({(aulas ?? []).length})</span>
+      </h2>
+      <a
+        href="/admin/aulas/nova"
+        class="font-display font-bold text-sm px-5 py-2.5 rounded-md text-white bg-ds hover:opacity-90 transition-opacity no-underline"
+      >+ Postar aula</a>
+    </div>
+    {(aulas ?? []).length === 0 ? (
+      <p class="font-body text-sm text-ink-soft rounded-md border border-paper-dark bg-white/40 px-4 py-5">
+        Nenhuma aula postada pelo site ainda — as aulas atuais vêm do repositório (.mdx). Clique
+        em "+ Postar aula" pra publicar a primeira pelo formulário.
+      </p>
+    ) : (
+      <ul class="flex flex-col gap-2 list-none p-0 m-0">
+        {(aulas ?? []).map((a) => (
+          <li class="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-paper-dark bg-white/50 px-4 py-3">
+            <span class:list={[
+              'font-mono text-[10px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5',
+              a.categoria === 'enem' && 'bg-enem-soft text-enem',
+              a.categoria === 'escolar' && 'bg-escolar-soft text-escolar',
+              a.categoria === 'ds' && 'bg-ds-soft text-ds',
+            ]}>{a.categoria}</span>
+            <a href={`/${a.slug}/`} class="font-body text-sm text-ink font-medium hover:underline">{a.title}</a>
+            {a.status === 'rascunho' && (
+              <span class="font-mono text-[10px] uppercase text-ink-soft border border-paper-dark rounded-full px-2 py-0.5">rascunho</span>
+            )}
+            <span class="ml-auto flex gap-3">
+              <a href={`/admin/aulas/nova?slug=${encodeURIComponent(a.slug)}`} class="font-mono text-[11px] text-ink-soft hover:text-ink underline underline-offset-2">editar</a>
+              <button type="button" data-excluir={a.slug} class="font-mono text-[11px] text-ink-soft hover:text-enem underline underline-offset-2">excluir</button>
+            </span>
+          </li>
+        ))}
+      </ul>
+    )}
+    <p id="resultado-aulas" class="font-body text-xs mt-2"></p>
+  </section>
 
   <div class="grid md:grid-cols-2 gap-8 mb-12">
     <section class="rounded-lg border border-paper-dark bg-white/50 p-5">
@@ -137,6 +203,7 @@ const minhaSala = user.salaId ? (salaPorId.get(user.salaId) ?? '—') : null;
             <th class="px-4 py-3">Nome completo</th>
             <th class="px-4 py-3">Sala</th>
             <th class="px-4 py-3">Papel</th>
+            <th class="px-4 py-3">Suporte</th>
           </tr>
         </thead>
         <tbody class="font-body text-sm text-ink">
@@ -157,11 +224,21 @@ const minhaSala = user.salaId ? (salaPorId.get(user.salaId) ?? '—') : null;
                   {p.role}
                 </span>
               </td>
+              <td class="px-4 py-2.5">
+                {(isAdm || (p.role === 'aluno' && p.sala_id === user.salaId)) && p.id !== user.id && (
+                  <button
+                    type="button"
+                    data-redefinir={p.username}
+                    class="font-mono text-[11px] text-ink-soft hover:text-ink underline underline-offset-2"
+                  >redefinir senha</button>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
+    <p id="resultado-senha" class="font-body text-xs mt-2"></p>
   </section>
 
   <script>
@@ -207,6 +284,56 @@ const minhaSala = user.salaId ? (salaPorId.get(user.salaId) ?? '—') : null;
         resultado.className = 'font-body text-xs leading-relaxed text-ds';
         formSala.reset();
       }
+    });
+
+    // excluir aula postada pelo site
+    document.querySelectorAll<HTMLButtonElement>('[data-excluir]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const slug = btn.dataset.excluir!;
+        if (!confirm(`Excluir a aula "${slug}"? As questões e atividades dela vão junto.`)) return;
+        const resultado = document.getElementById('resultado-aulas')!;
+        resultado.textContent = 'Excluindo…';
+        try {
+          const resp = await fetch('/api/aulas/excluir', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug }),
+          });
+          const corpo = await resp.json();
+          if (!resp.ok) throw new Error(corpo.error ?? 'Falha');
+          btn.closest('li')?.remove();
+          resultado.textContent = '✓ Aula excluída.';
+          resultado.className = 'font-body text-xs mt-2 text-ds';
+        } catch (err) {
+          resultado.textContent = '✕ ' + (err instanceof Error ? err.message : 'Erro');
+          resultado.className = 'font-body text-xs mt-2 text-enem';
+        }
+      });
+    });
+
+    // redefinir senha (suporte)
+    document.querySelectorAll<HTMLButtonElement>('[data-redefinir]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const username = btn.dataset.redefinir!;
+        if (!confirm(`Redefinir a senha de @${username}? A pessoa volta pra senha padrão e troca no próximo login.`)) return;
+        const resultado = document.getElementById('resultado-senha')!;
+        resultado.textContent = 'Redefinindo…';
+        resultado.className = 'font-body text-xs mt-2 text-ink-soft';
+        try {
+          const resp = await fetch('/api/usuarios/redefinir-senha', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username }),
+          });
+          const corpo = await resp.json();
+          if (!resp.ok) throw new Error(corpo.error ?? 'Falha');
+          resultado.innerHTML = `✓ Senha de <b>@${corpo.username}</b> redefinida. Nova senha padrão: <code>${corpo.senhaPadrao}</code> — anote e entregue!`;
+          resultado.className = 'font-body text-xs mt-2 text-ds';
+        } catch (err) {
+          resultado.textContent = '✕ ' + (err instanceof Error ? err.message : 'Erro');
+          resultado.className = 'font-body text-xs mt-2 text-enem';
+        }
+      });
     });
   </script>
 </Base>

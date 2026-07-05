@@ -34,6 +34,17 @@ const borderColor = active ? accentByTab[active] : 'var(--color-line)';
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Literata:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400;600&display=swap"
       rel="stylesheet"
     />
+    <script is:inline>
+      // Aplica tema/fonte salvos ANTES do primeiro paint (sem flash).
+      (function () {
+        try {
+          var tema = localStorage.getItem('cdt:tema');
+          var fonte = localStorage.getItem('cdt:fonte');
+          if (tema === 'escuro') document.documentElement.dataset.tema = 'escuro';
+          if (fonte === 'moderna') document.documentElement.dataset.fonte = 'moderna';
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body class="min-h-screen flex flex-col">
     <header class="pt-6 sm:pt-8 md:pt-12">
@@ -56,6 +67,11 @@ const borderColor = active ? accentByTab[active] : 'var(--color-line)';
               >gestão</a>
             )}
             <span class="font-mono text-xs text-ink-soft hidden sm:inline">@{user.username}</span>
+            <a
+              href="/configuracoes"
+              aria-label="Configurações"
+              class="font-mono text-xs text-ink-soft hover:text-ink no-underline"
+            >⚙️</a>
             <form method="POST" action="/api/auth/logout">
               <button
                 type="submit"

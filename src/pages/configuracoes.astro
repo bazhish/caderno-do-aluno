@@ -1,0 +1,97 @@
+---
+import Base from '../layouts/Base.astro';
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/login');
+---
+
+<Base title="Configurações">
+  <p class="font-mono text-xs uppercase tracking-widest text-ink-soft mb-2">preferências</p>
+  <h1 class="font-display text-3xl md:text-4xl font-bold text-ink mb-3">Configurações</h1>
+  <p class="font-body text-sm text-ink-soft max-w-xl mb-10 leading-relaxed">
+    Suas preferências ficam salvas neste navegador e valem pra todo o site.
+  </p>
+
+  <div class="grid sm:grid-cols-2 gap-6 max-w-3xl">
+    <section class="rounded-lg border border-paper-dark bg-white/50 p-5">
+      <h2 class="font-display text-lg font-bold text-ink mb-1">🎨 Tema</h2>
+      <p class="font-body text-xs text-ink-soft mb-4">Caderno de dia ou de noite.</p>
+      <div class="flex flex-col gap-2">
+        <label class="opcao">
+          <input type="radio" name="tema" value="claro" />
+          <span><b>Claro</b> — folha de caderno clássica</span>
+        </label>
+        <label class="opcao">
+          <input type="radio" name="tema" value="escuro" />
+          <span><b>Escuro</b> — pra estudar de madrugada sem torrar o olho</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="rounded-lg border border-paper-dark bg-white/50 p-5">
+      <h2 class="font-display text-lg font-bold text-ink mb-1">🔤 Fonte de leitura</h2>
+      <p class="font-body text-xs text-ink-soft mb-4">A fonte dos textos das aulas.</p>
+      <div class="flex flex-col gap-2">
+        <label class="opcao">
+          <input type="radio" name="fonte" value="classica" />
+          <span style="font-family: 'Literata', Georgia, serif;"><b>Clássica</b> — serifada, jeitão de livro</span>
+        </label>
+        <label class="opcao">
+          <input type="radio" name="fonte" value="moderna" />
+          <span style="font-family: 'Space Grotesk', sans-serif;"><b>Moderna</b> — sem serifa, mais limpa</span>
+        </label>
+      </div>
+    </section>
+  </div>
+
+  <p class="font-mono text-[11px] text-ink-soft mt-8">
+    as mudanças são aplicadas na hora ✓
+  </p>
+
+  <style>
+    .opcao {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border: 1px solid var(--color-paper-dark);
+      border-radius: 0.5rem;
+      padding: 0.7rem 0.9rem;
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      color: var(--color-ink);
+      cursor: pointer;
+    }
+    .opcao:hover { border-color: var(--color-ink-soft); }
+    .opcao:has(input:checked) {
+      border-color: var(--color-ink);
+      background: rgb(255 255 255 / 0.5);
+    }
+  </style>
+
+  <script>
+    const aplicar = () => {
+      const tema = localStorage.getItem('cdt:tema') ?? 'claro';
+      const fonte = localStorage.getItem('cdt:fonte') ?? 'classica';
+      if (tema === 'escuro') document.documentElement.dataset.tema = 'escuro';
+      else delete document.documentElement.dataset.tema;
+      if (fonte === 'moderna') document.documentElement.dataset.fonte = 'moderna';
+      else delete document.documentElement.dataset.fonte;
+      (document.querySelector(`input[name="tema"][value="${tema}"]`) as HTMLInputElement).checked = true;
+      (document.querySelector(`input[name="fonte"][value="${fonte}"]`) as HTMLInputElement).checked = true;
+    };
+    aplicar();
+
+    document.querySelectorAll<HTMLInputElement>('input[name="tema"]').forEach((r) =>
+      r.addEventListener('change', () => {
+        localStorage.setItem('cdt:tema', r.value);
+        aplicar();
+      })
+    );
+    document.querySelectorAll<HTMLInputElement>('input[name="fonte"]').forEach((r) =>
+      r.addEventListener('change', () => {
+        localStorage.setItem('cdt:fonte', r.value);
+        aplicar();
+      })
+    );
+  </script>
+</Base>

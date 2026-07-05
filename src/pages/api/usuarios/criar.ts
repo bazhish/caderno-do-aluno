@@ -67,26 +67,40 @@ export const POST: APIRoute = async (context) => {
   }
 
   const senha = senhaPadrao(nomeCompleto);
+  const metadata = {
+    username,
+    nome_completo: nomeCompleto,
+    sala_id: salaId ?? '',
+    must_change_password: true,
+  };
 
-  // Cliente descartável: não pode tocar nos cookies da sessão de quem registra.
-  const temp = createClient(
-    import.meta.env.PUBLIC_SUPABASE_URL,
-    import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
-    { auth: { persistSession: false, autoRefreshToken: false } }
-  );
-
-  const { error } = await temp.auth.signUp({
-    email: usernameParaEmail(username),
-    password: senha,
-    options: {
-      data: {
-        username,
-        nome_completo: nomeCompleto,
-        sala_id: salaId ?? '',
-        must_change_password: true,
-      },
-    },
-  });
+  // Com a service key presente, usa a Admin API (permite desligar o signup
+  // público no Supabase — PROJETO.md §9). Sem ela, cai no signup gateado.
+  const serviceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+  let error: { message: string } | null = null;
+  if (serviceKey) {
+    const admin = createClient(import.meta.env.PUBLIC_SUPABASE_URL, serviceKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    ({ error } = await admin.auth.admin.createUser({
+      email: usernameParaEmail(username),
+      password: senha,
+      email_confirm: true,
+      user_metadata: metadata,
+    }));
+  } else {
+    // Cliente descartável: não pode tocar nos cookies da sessão de quem registra.
+    const temp = createClient(
+      import.meta.env.PUBLIC_SUPABASE_URL,
+      import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+      { auth: { persistSession: false, autoRefreshToken: false } }
+    );
+    ({ error } = await temp.auth.signUp({
+      email: usernameParaEmail(username),
+      password: senha,
+      options: { data: metadata },
+    }));
+  }
 
   if (error) {
     if (/already registered/i.test(error.message)) {

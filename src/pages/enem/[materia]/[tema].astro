@@ -1,31 +1,44 @@
 ---
 import Tema from '../../../layouts/Tema.astro';
 import { getCollection, render } from 'astro:content';
-import { splitSlug } from '../../../lib/slug';
 import { u } from '../../../lib/url';
+import { buscarAulaDb, listarAtividades } from '../../../lib/lessonsRepo';
 
 const { materia, tema } = Astro.params;
-const entries = await getCollection('enem');
-const entry = entries.find((e) => e.id === `${materia}/${tema}`);
-if (!entry) return Astro.redirect(u('/enem'));
-const { Content } = await render(entry);
-const subjectLabel = entry.data.subject;
+const slug = `enem/${materia}/${tema}`;
+
+// Banco primeiro (aulas postadas pelo site); .mdx do repositório como legado.
+const aulaDb = await buscarAulaDb(Astro, slug);
+
+let entry: any = null;
+let Content: any = null;
+if (!aulaDb) {
+  const entries = await getCollection('enem');
+  entry = entries.find((e) => e.id === `${materia}/${tema}`);
+  if (!entry) return Astro.redirect(u('/enem'));
+  Content = (await render(entry)).Content;
+}
+
+const subjectLabel = aulaDb?.materiaNome ?? entry.data.subject;
+const atividades = aulaDb ? await listarAtividades(Astro, slug) : [];
 ---
 
 <Tema
-  title={entry.data.title}
+  title={aulaDb?.title ?? entry.data.title}
   subject={subjectLabel}
-  relevance={entry.data.relevance}
-  quickSummary={entry.data.quickSummary}
-  resources={entry.data.resources}
-  questions={entry.data.questions}
+  relevance={aulaDb?.relevance ?? entry.data.relevance}
+  quickSummary={aulaDb?.quickSummary ?? entry.data.quickSummary}
+  resources={aulaDb?.resources ?? entry.data.resources}
+  questions={aulaDb ? [] : entry.data.questions}
   active="enem"
-  slug={`enem/${entry.id}`}
+  slug={slug}
+  bodyHtml={aulaDb?.bodyHtml}
+  atividades={atividades}
   breadcrumb={[
     { label: 'ENEM', href: u('/enem') },
     { label: subjectLabel, href: u(`/enem/${materia}/`) },
-    { label: entry.data.title },
+    { label: aulaDb?.title ?? entry.data.title },
   ]}
 >
-  <Content />
+  {Content && <Content />}
 </Tema>

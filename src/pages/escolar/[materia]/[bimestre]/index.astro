@@ -1,11 +1,11 @@
 ---
 import Base from '../../../../layouts/Base.astro';
-import { getCollection } from 'astro:content';
 import { buildMateriaBimestreTree, splitSlug, semanaLabel } from '../../../../lib/slug';
 import { u } from '../../../../lib/url';
+import { listarEntradas } from '../../../../lib/lessonsRepo';
 
 const { materia, bimestre } = Astro.params;
-const tree = buildMateriaBimestreTree(await getCollection('escolar'));
+const tree = buildMateriaBimestreTree(await listarEntradas(Astro, 'escolar'));
 const materiaNode = materia ? tree.get(materia) : undefined;
 const bim = bimestre ? materiaNode?.bimestres.get(bimestre) : undefined;
 if (!materiaNode || !bim) return Astro.redirect(u('/escolar'));

@@ -21,6 +21,33 @@
   --color-line: #c9c2a8;
 }
 
+/* Tema escuro: "caderno à noite". Aplicado via data-attribute no <html>
+   (definido por um script inline no <head> antes do primeiro paint). */
+html[data-tema='escuro'] {
+  color-scheme: dark;
+  --color-paper: #23262f;
+  --color-paper-dark: #31354a;
+  --color-ink: #e8e6df;
+  --color-ink-soft: #a7a9b3;
+  --color-line: #3a3e52;
+  --color-enem-soft: #4a2b24;
+  --color-escolar-soft: #26374d;
+  --color-ds-soft: #25402f;
+}
+/* Os utilitários bg-white/* do Tailwind são literais — no escuro viram um
+   véu clarinho sobre a folha. */
+html[data-tema='escuro'] :is(.bg-white\/40, .bg-white\/50, .bg-white\/60, .bg-white\/80) {
+  background-color: rgb(255 255 255 / 0.05) !important;
+}
+html[data-tema='escuro'] .text-black {
+  color: var(--color-ink) !important;
+}
+
+/* Fonte do corpo: "moderna" troca a serifada pela sans já carregada. */
+html[data-fonte='moderna'] {
+  --font-body: 'Space Grotesk', sans-serif;
+}
+
 @layer base {
   body {
     background-color: var(--color-paper);
