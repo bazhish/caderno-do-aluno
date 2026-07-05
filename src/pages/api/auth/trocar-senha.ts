@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro';
-import { createSupabaseServer } from '../../../lib/supabaseServer';
+import { createSupabaseServer, origemSuspeita } from '../../../lib/supabaseServer';
 
 export const POST: APIRoute = async (context) => {
+  if (origemSuspeita(context.request, context.url)) return context.redirect('/trocar-senha?erro=origem');
   const form = await context.request.formData();
   const senha = String(form.get('senha') ?? '');
   const confirma = String(form.get('confirma') ?? '');

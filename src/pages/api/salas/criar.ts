@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { createSupabaseServer } from '../../../lib/supabaseServer';
+import { createSupabaseServer, origemSuspeita } from '../../../lib/supabaseServer';
 
 const json = (status: number, body: object) =>
   new Response(JSON.stringify(body), {
@@ -8,6 +8,7 @@ const json = (status: number, body: object) =>
   });
 
 export const POST: APIRoute = async (context) => {
+  if (origemSuspeita(context.request, context.url)) return json(403, { error: 'Origem não permitida.' });
   const requester = context.locals.user;
   if (!requester || requester.role !== 'adm') {
     return json(403, { error: 'Só o ADM cria salas.' });

@@ -1,0 +1,4 @@
+# Caderno da Turma é um site fechado por login — não há conteúdo público
+# para indexar. Pedimos aos rastreadores que não indexem nenhuma rota.
+User-agent: *
+Disallow: /

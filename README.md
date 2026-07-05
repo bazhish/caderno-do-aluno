@@ -1,150 +1,207 @@
-# Caderno da Turma
+<div align="center">
 
-Site estático (Astro + React + Tailwind) para compartilhar aulas em 3 categorias: **ENEM**,
-**Escolar** e **DS**. Sem login, sem backend — qualquer pessoa com o link acessa em poucos cliques.
+<img src="public/icon-512.png" alt="Caderno da Turma" width="104" height="104" />
 
-## Rodando localmente
+# Caderno da Turma<span>.</span>
+
+**Feito por alunos, para alunos.**
+
+Plataforma solidária de material de estudo — resumo, vídeo, curso e questões — organizada
+por **ENEM**, **Escolar** e **Curso técnico**, com login por turma, comentários em tempo real
+e banco de questões anti-cola.
+
+[![Astro](https://img.shields.io/badge/Astro-SSR-BC52EE?logo=astro&logoColor=white)](https://astro.build)
+[![React](https://img.shields.io/badge/React-islands-149ECA?logo=react&logoColor=white)](https://react.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Supabase](https://img.shields.io/badge/Supabase-Postgres%20·%20Auth%20·%20RLS-3FCF8E?logo=supabase&logoColor=white)](https://supabase.com)
+[![Vercel](https://img.shields.io/badge/Vercel-serverless-000000?logo=vercel&logoColor=white)](https://vercel.com)
+![pt-BR](https://img.shields.io/badge/idioma-pt--BR-informational)
+[![License: MIT](https://img.shields.io/badge/licença-MIT-yellow.svg)](./LICENSE)
+
+[**🌐 Ver no ar**](https://caderno-da-turma.vercel.app) · [Especificação](./PROJETO.md) · [Postar uma aula](./POSTAR_AULA.md)
+
+</div>
+
+---
+
+## Sobre
+
+O material de apoio oficial costuma ser fraco, e montar material bom (resumo + vídeo + questões)
+toma um tempo que aluno de 3º ano — com estágio, trabalho e vida — não tem. A ideia do Caderno da
+Turma: **poucas pessoas estruturam bem uma vez, todo mundo aproveita**, e o esforço de contribuir é
+o menor possível.
+
+O site inteiro fica **atrás de login** (não existe auto-cadastro — contas são criadas por
+coordenadores/ADM). Cada turma tem seu material, mas a navegação é aberta entre salas: qualquer
+aluno logado lê o conteúdo de qualquer sala; o que muda é o **padrão** de onde ele cai ao entrar.
+
+## Funcionalidades
+
+- 🔐 **Login por turma, sem auto-cadastro** — username vira e-mail sintético (`@caderno.local`);
+  senha padrão `nome.sobrenome@ano` com **troca obrigatória no primeiro acesso**.
+- 👤 **Três papéis** — aluno (lê e comenta), coordenador (posta/edita/modera **a própria sala**,
+  registra alunos) e ADM (tudo). Papel só muda por função `SECURITY DEFINER` no banco.
+- ✍️ **Postagem de aula pelo próprio site** — formulário completo (`/admin/aulas/nova`): teoria em
+  Markdown, recursos de apoio, banco de questões e atividades. Sem mexer em GitHub.
+- 💬 **Comentários em tempo real** (Supabase Realtime) com **censura automática no banco**
+  (trigger + lista de termos mantida pelo ADM) e moderação humana por cima.
+- 🎲 **Banco de questões anti-cola** — cada aluno recebe um sorteio próprio; refazer o quiz nunca
+  repete questão já respondida.
+- 🎯 **Pause e Responda** — no curso técnico, 1 questão por aula + **atividades práticas** de texto
+  livre (sem correção automática).
+- 🌙 **Tema claro/escuro e fonte de leitura** — aplicados antes do primeiro paint, sem flash.
+- 📊 **Painel de gestão** — métricas, redefinição de senha (suporte) e gerência de aulas.
+- 📓 **Visual de fichário** — folha pautada, furos perfurados em CSS puro e abas post-it por
+  categoria.
+
+## Stack
+
+| Camada | Tecnologia |
+|---|---|
+| Framework | [Astro](https://astro.build) em modo **servidor (SSR)** + ilhas [React](https://react.dev) |
+| Estilo | [Tailwind CSS 4](https://tailwindcss.com) |
+| Banco / Auth | [Supabase](https://supabase.com) — Postgres + Auth + **RLS** + Realtime |
+| Conteúdo | `.mdx` no repositório (legado) **+** tabela `lessons` no banco |
+| Hospedagem | [Vercel](https://vercel.com) serverless (adapter `@astrojs/vercel`), deploy contínuo na `main` |
+
+## Arquitetura
+
+```
+Navegador ──▶ Middleware (src/middleware.ts)
+                 │  exige sessão Supabase em toda rota (401 nas /api/*),
+                 │  carrega perfil em Astro.locals.user, força troca de senha
+                 ▼
+        Páginas Astro (SSR)  ◀── lessonsRepo.ts unifica  ┌ tabela lessons (banco)
+                 │                                        └ coleções .mdx (legado)
+                 ├─ ilhas React (client:idle): Quiz, Comentários
+                 └─ APIs /api/* (login, aulas, usuários, salas)
+                                   │
+                                   ▼
+                          Supabase (Postgres)
+                   RLS = barreira de segurança real · Realtime · triggers
+```
+
+- **Auth no servidor:** o middleware gateia todas as rotas — não é esconde-com-JS. Login mapeia
+  `username` → e-mail sintético `username@caderno.local`.
+- **Conteúdo de fonte dupla:** [`lessonsRepo.ts`](src/lib/lessonsRepo.ts) junta a tabela `lessons`
+  e as coleções `.mdx`; o banco vence colisões de slug. Markdown é renderizado no servidor com HTML
+  cru **escapado** (guarda de XSS).
+- **RLS é a segurança de verdade:** a interface nunca é a barreira; papéis e isolamento por sala são
+  aplicados por políticas Postgres. A `service_role` fica **só no servidor**.
+
+## Modelo de segurança
+
+| Vetor | Como é tratado |
+|---|---|
+| Autorização | RLS por papel **e por sala** — coordenador só edita/exclui/modera conteúdo e comentários da **própria sala**; ENEM/legado é do ADM |
+| Escalada de papel | Só via funções `SECURITY DEFINER` (`promote_user`, `criar_sala`) que checam o papel de quem chama |
+| Injeção SQL | Consultas parametrizadas via PostgREST; sem concatenação de SQL |
+| XSS | HTML cru escapado antes do `marked.parse` no corpo das aulas |
+| CSRF | Guard de mesma-origem (`origemSuspeita`) em todos os POSTs de escrita |
+| Censura | Trigger `BEFORE INSERT/UPDATE` no banco, com o termo **escapado** antes de virar regex |
+| Segredos | `SUPABASE_SERVICE_ROLE_KEY` nunca exposta como `PUBLIC_`; usada só em rotas de servidor |
+
+## Começando
+
+Pré-requisitos: **Node 20+** e uma conta gratuita no Supabase.
 
 ```bash
 npm install
-npm run dev       # abre em http://localhost:4321
+cp .env.example .env      # preencha PUBLIC_SUPABASE_URL e PUBLIC_SUPABASE_ANON_KEY
+npm run dev               # http://localhost:4321 (SSR)
 ```
 
-## Login, papéis e comentários
+Sem as variáveis do Supabase, o site roda em **modo demonstração** (aberto, dados no
+`localStorage`) — bom pra visualizar a interface sem banco.
 
-O site inteiro fica atrás de login (sem auto-cadastro): coordenadores e ADMs registram as contas
-pela página **/admin**, com senha padrão `nome.sobrenome@ano` que o sistema obriga a trocar no
-primeiro acesso. Papéis: **aluno** (lê e comenta), **coordenador** (posta conteúdo e modera a
-própria sala, registra alunos), **ADM** (tudo). Cada aula tem a seção "Comentários da Turma".
-A especificação completa do produto está em [`PROJETO.md`](./PROJETO.md).
+### Banco de dados
 
-Setup do banco: rodar [`supabase/schema.sql`](./supabase/schema.sql) e depois
-[`supabase/schema-v2.sql`](./supabase/schema-v2.sql) no SQL Editor do Supabase, e copiar as
-chaves pro `.env` (modelo em [`.env.example`](./.env.example)).
+No **SQL Editor** do Supabase, rode os schemas **em ordem** (são idempotentes):
 
-## Colocando no ar
-
-O site é **dinâmico (SSR)** e está no ar na Vercel (tier gratuito, adapter `@astrojs/vercel`):
-**https://caderno-da-turma.vercel.app** — todo push na `main` redeploya automaticamente.
-Variáveis de ambiente no host: `PUBLIC_SUPABASE_URL` e `PUBLIC_SUPABASE_ANON_KEY`.
-
-> **Guia rápido sem instalar nada:** [POSTAR_AULA.md](./POSTAR_AULA.md) — fluxo IA + editor web
-> do GitHub, ~10 min do conteúdo bruto até a aula no ar.
-
-## Como adicionar uma aula nova
-
-Cada aula é um arquivo `.mdx` dentro de `src/content/`. Não precisa mexer em nenhuma página — as
-rotas são geradas automaticamente a partir da pasta.
-
-**ENEM** (matéria → tema direto):
 ```
-src/content/enem/<materia>/<tema>.mdx
-```
-A aba ENEM lista as matérias agrupadas pelas 4 áreas oficiais do exame (definidas em
-`src/pages/enem/index.astro`). Para a aula aparecer vinculada à matéria certa, `<materia>` precisa
-bater com um dos slugs já cadastrados nessa lista (ex: `fisica`, `matematica`, `historia`). Matérias
-sem conteúdo aparecem mesmo assim, com o aviso "Material ainda não compartilhado".
-
-**Escolar / DS** (matéria → bimestre → semana):
-```
-src/content/escolar/<materia>/<N>-bimestre/semana-<NN>-<tema>.mdx
-src/content/ds/<materia>/<N>-bimestre/semana-<NN>-<tema>.mdx
+supabase/schema.sql      →  v1: perfis, comentários, RLS base
+supabase/schema-v2.sql   →  v2: cursos, salas, nome real privado, banco de questões, censura
+supabase/schema-v3.sql   →  v3: tempo real, trigger de censura, moderação (apagar_comentario)
+supabase/schema-v4.sql   →  v4: aulas no banco, atividades, métricas, isolamento por sala
 ```
 
-O nome da pasta/arquivo vira a URL, então use só letras minúsculas, números e hífen (sem acento,
-sem espaço).
+### Scripts
 
-### Estrutura de cada arquivo `.mdx`
-
-```mdx
----
-title: "Nome da Aula"
-subject: "Nome da Matéria"     # aparece como rótulo (ex: "Matemática")
-order: 1                        # ordem de exibição na lista
-relevance: >
-  Parágrafo curto: por que esse tema importa e com que frequência cai.
-quickSummary: >
-  Opcional. 2-4 linhas de resumo direto, exibido em destaque no topo da aula.
-resources:                      # opcional — inteiro ou por subseção
-  videoAula:
-    link: "https://..."
-    duracao: "12 min"
-    motivo: "por que vale assistir"
-  cursoGratuito:
-    link: "https://..."
-    cargaHoraria: "4h"
-    indicadoPara: "iniciante | revisão | avançado"
-  materiaisAdicionais:
-    ebook: "..."
-    exercicios: "..."
-    provaAntiga: "..."
-    outro: "..."
-    nivel: "fácil | médio | difícil"
-  conteudoComplementar:
-    conteudo: "..."
-    comoAjuda: "..."
-questions:                      # sempre 5, nesta ordem
-  - question: "Enunciado da questão 1"
-    options:
-      - "Alternativa A"
-      - "Alternativa B"
-      - "Alternativa C"
-      - "Alternativa D"
-      - "Alternativa E"
-    correctIndex: 2              # 0 = A, 1 = B, 2 = C, 3 = D, 4 = E
-    explanation: "Por que essa é a resposta certa (e a pegadinha, se houver)."
-    source: "ENEM 2022, questão 136"   # opcional
-  # ... repetir até 5 questões
----
-
-## Aula Teórica Completa
-
-Texto explicativo rico mas direto: parágrafos curtos, um subtítulo (`###`) por sub-tópico quando o
-tema tiver mais de 2-3 partes. Toda fórmula deve vir desmembrada, explicando cada variável
-(ex: "A = b × h — A é a área, b é a base, h é a altura").
-
-## Tópicos-Chave para Revisão
-
-<div className="topico">
-
-Um parágrafo curto por ideia central, com as palavras-chave em **negrito**.
-
-Separe cada parágrafo com uma linha em branco — cada um vira um bloco visual no site.
-
-</div>
+```bash
+npm run dev       # servidor de desenvolvimento (SSR, usa .env)
+npm run build     # build de produção para dist/ (cliente + servidor)
+npm start         # roda o build (node dist/server/entry.mjs)
 ```
 
-O quiz (seção "Teste de Fogo") é gerado automaticamente a partir do array `questions` do
-frontmatter — não precisa escrever nada a mais no corpo do arquivo. Cada questão tem seu próprio
-botão "Corrigir", independente das outras.
+## Deploy
 
-> **Convertendo conteúdo bruto para esse formato:** veja [`CONTEUDO_PROMPT.md`](./CONTEUDO_PROMPT.md)
-> — um prompt pronto pra colar em qualquer IA de chat junto com suas anotações e sair com o `.mdx`
-> formatado, sem precisar montar o arquivo manualmente.
+Está no ar na Vercel (tier gratuito): **https://caderno-da-turma.vercel.app**. Todo push na `main`
+redeploya. Variáveis de ambiente no host:
+
+| Variável | Onde | Obrigatória |
+|---|---|---|
+| `PUBLIC_SUPABASE_URL` | pública | ✅ |
+| `PUBLIC_SUPABASE_ANON_KEY` | pública | ✅ |
+| `SUPABASE_SERVICE_ROLE_KEY` | **secreta (servidor)** | opcional — habilita redefinir senha e desligar o signup público |
 
 ## Estrutura do projeto
 
 ```
 src/
-  content.config.ts       # schema (Zod) das 3 coleções: enem, escolar, ds
-  content/                # as aulas em .mdx (dado real do site)
+  middleware.ts            # portão de auth — gateia toda rota, carrega o perfil
+  content.config.ts        # schema Zod das coleções .mdx (enem, escolar, ds)
+  content/                 # aulas legadas em .mdx
   components/
     Quiz.jsx               # quiz interativo, corrigido questão por questão
-    Comentarios.jsx         # comentários por aula, com login (Supabase ou modo demo)
-    Recursos.astro          # bloco de recursos extras (vídeo aula, curso, materiais, complementar)
-    TabNav.astro            # navegação entre as 4 abas (Início, ENEM, Escolar, DS)
-    HelpTip.astro            # botão "?" que abre um card de ajuda contextual (modal)
-  lib/commentsBackend.js  # backend dos comentários: Supabase real ou demo (localStorage)
+    Comentarios.jsx        # comentários em tempo real por aula
+    Recursos.astro         # bloco de recursos de apoio
+    TabNav.astro           # abas Início / ENEM / Escolar / DS
   layouts/
-    Base.astro               # casco HTML, fontes, navegação, botões voltar/avançar, folha estilo fichário
-    Tema.astro                # estrutura fixa de toda aula (relevância + conteúdo + recursos + quiz)
-  pages/                    # rotas, geradas a partir do content/
-  lib/slug.ts                # helpers para transformar caminho de arquivo em rótulo/URL
-
-CONTEUDO_PROMPT.md        # prompt pronto pra converter anotações brutas em aula .mdx via IA
+    Base.astro             # casco HTML, fontes, tema, folha de fichário
+    Tema.astro             # estrutura fixa de toda aula
+  lib/
+    supabaseServer.ts      # cliente Supabase (cookies), helpers de auth/CSRF
+    lessonsRepo.ts         # unifica aulas do banco + .mdx
+    quizBackend.js         # sorteio anti-cola do banco de questões
+    commentsBackend.js     # comentários (Supabase real ou demo)
+  pages/
+    api/                   # login, aulas, usuários, salas
+    admin/                 # painel de gestão e formulário de postagem
+supabase/                  # schema.sql … schema-v4.sql (rodar em ordem)
 ```
 
-## Conteúdo atual
+## Adicionar uma aula
 
-O conteúdo publicado agora é **fictício**, só para demonstrar a estrutura (1–2 aulas por
-categoria). Troque pelos temas reais seguindo o formato acima.
+Duas formas:
+
+1. **Pelo site** (recomendado para coordenadores): `/admin/aulas/nova` — formulário completo, sem
+   tocar em código.
+2. **Como arquivo `.mdx`** (avançado): um arquivo por aula em `src/content/`; as rotas são geradas
+   a partir da pasta. Template do frontmatter e convenções em [`POSTAR_AULA.md`](./POSTAR_AULA.md);
+   [`CONTEUDO_PROMPT.md`](./CONTEUDO_PROMPT.md) tem um prompt de IA pronto para converter anotações
+   brutas no `.mdx` formatado.
+
+## Roadmap
+
+| Fase | Entrega | Status |
+|---|---|---|
+| 0 | Site de conteúdo `.mdx` + comentários com Supabase | ✅ |
+| 1 | SSR + login obrigatório + papéis no middleware + salas/cursos + deploy | ✅ |
+| 2 | Comentários em tempo real + censura no banco + banco de questões anti-cola | ✅ |
+| 3 | Formulário de postagem no site + Pause e Responda + atividades práticas | ✅ |
+| 4 | Configurações (tema/fonte) + painel ADM + suporte a `service_role` | ✅ |
+
+Detalhes de produto (papéis, estrutura por semana, fases) em [`PROJETO.md`](./PROJETO.md).
+
+## Documentação
+
+- [`PROJETO.md`](./PROJETO.md) — especificação-mestre do produto.
+- [`POSTAR_AULA.md`](./POSTAR_AULA.md) — guia de postagem de aula (site e `.mdx`).
+- [`CONTEUDO_PROMPT.md`](./CONTEUDO_PROMPT.md) — prompt de IA para gerar aulas.
+- [`CLAUDE.md`](./CLAUDE.md) — notas de arquitetura para contribuidores.
+
+## Licença
+
+[MIT](./LICENSE) — use, adapte e compartilhe. Se este projeto ajudar sua escola, avise a gente. 💛
+
+<div align="center"><sub>Consulte sempre um professor em caso de dúvidas.</sub></div>

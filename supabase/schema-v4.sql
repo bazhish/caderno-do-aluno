@@ -62,19 +62,31 @@ create policy "lessons_select"
     )
   );
 
+-- Isolamento por sala (PROJETO.md §4): ADM escreve qualquer aula; coordenador
+-- SÓ as da própria sala. Aula de ENEM (sala_id null) e conteúdo legado ficam a
+-- cargo do ADM. Vale tanto pra ler quem pode mexer (USING, no UPDATE/DELETE)
+-- quanto pra barrar gravar em sala alheia (WITH CHECK, no INSERT/UPDATE).
 drop policy if exists "lessons_write_moderacao" on public.lessons;
 create policy "lessons_write_moderacao"
   on public.lessons for all
   using (
     exists (
       select 1 from public.profiles p
-      where p.id = auth.uid() and p.role in ('adm', 'coordenador')
+      where p.id = auth.uid()
+        and (
+          p.role = 'adm'
+          or (p.role = 'coordenador' and p.sala_id is not null and p.sala_id = lessons.sala_id)
+        )
     )
   )
   with check (
     exists (
       select 1 from public.profiles p
-      where p.id = auth.uid() and p.role in ('adm', 'coordenador')
+      where p.id = auth.uid()
+        and (
+          p.role = 'adm'
+          or (p.role = 'coordenador' and p.sala_id is not null and p.sala_id = lessons.sala_id)
+        )
     )
   );
 
@@ -117,5 +129,70 @@ begin
     'questoes', (select count(*) from public.questoes),
     'respostas_registradas', (select count(*) from public.questoes_respondidas)
   );
+end;
+$$;
+
+-- ---------------------------------------------------------------------------
+-- Isolamento por sala nas tabelas que dependem de lessons (redefinido aqui,
+-- depois que a tabela lessons já existe). Coordenador só mexe no conteúdo da
+-- própria sala; ENEM e conteúdo legado (sem linha em lessons) são só do ADM.
+-- ---------------------------------------------------------------------------
+
+-- Banco de questões: coordenador só gerencia questões de aulas da sua sala.
+drop policy if exists "questoes_write_moderacao" on public.questoes;
+create policy "questoes_write_moderacao"
+  on public.questoes for all
+  using (
+    exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'adm')
+    or exists (
+      select 1 from public.profiles p
+      join public.lessons l on l.sala_id = p.sala_id
+      where p.id = auth.uid() and p.role = 'coordenador'
+        and l.slug = questoes.lesson_slug
+    )
+  )
+  with check (
+    exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'adm')
+    or exists (
+      select 1 from public.profiles p
+      join public.lessons l on l.sala_id = p.sala_id
+      where p.id = auth.uid() and p.role = 'coordenador'
+        and l.slug = questoes.lesson_slug
+    )
+  );
+
+-- Moderar comentário: dono sempre; ADM qualquer; coordenador só em aulas da
+-- própria sala (comentário de aula sem sala conhecida → só ADM ou o dono).
+create or replace function public.apagar_comentario(p_comment_id uuid)
+returns void
+language plpgsql
+security definer set search_path = public
+as $$
+declare
+  v_owner uuid;
+  v_slug text;
+  v_role text;
+  v_minha_sala uuid;
+  v_sala_aula uuid;
+begin
+  select user_id, lesson_slug into v_owner, v_slug
+    from public.comments where id = p_comment_id;
+  if v_owner is null then
+    raise exception 'comentário não encontrado';
+  end if;
+
+  select role, sala_id into v_role, v_minha_sala
+    from public.profiles where id = auth.uid();
+  select sala_id into v_sala_aula
+    from public.lessons where slug = v_slug;
+
+  if auth.uid() = v_owner
+     or v_role = 'adm'
+     or (v_role = 'coordenador' and v_sala_aula is not null and v_sala_aula = v_minha_sala)
+  then
+    update public.comments set deleted_at = now() where id = p_comment_id;
+  else
+    raise exception 'sem permissão para apagar este comentário';
+  end if;
 end;
 $$;

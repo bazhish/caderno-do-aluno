@@ -31,9 +31,11 @@ declare
   corpo text;
 begin
   corpo := lower(public.unaccent(new.body));
+  -- O termo é escapado antes de virar regex: um termo com metacaractere
+  -- (ex.: "c++") não pode quebrar o filtro e derrubar TODO comentário do site.
   if exists (
     select 1 from public.palavras_bloqueadas p
-    where corpo ~ ('\m' || p.termo || '\M')
+    where corpo ~ ('\m' || regexp_replace(p.termo, '([.^$*+?()\[\]{}|\\-])', '\\\1', 'g') || '\M')
   ) then
     raise exception 'PALAVRA_BLOQUEADA';
   end if;
@@ -60,6 +62,9 @@ on conflict (termo) do nothing;
 -- Banco de questões: quem posta conteúdo (coordenador/ADM) gerencia questões;
 -- aluno pode apagar o próprio histórico ("recomeçar do zero").
 -- ---------------------------------------------------------------------------
+-- Escrita do banco de questões: só coordenador/ADM. O isolamento por sala
+-- (coordenador só mexe nas questões de aulas da própria sala) é aplicado no
+-- schema-v4.sql, que redefine esta política DEPOIS de a tabela lessons existir.
 drop policy if exists "questoes_write_moderacao" on public.questoes;
 create policy "questoes_write_moderacao"
   on public.questoes for all

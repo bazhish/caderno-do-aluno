@@ -2,7 +2,7 @@
 // Na edição os campos que formam o slug ficam travados (renomear slug
 // quebraria comentários e questões atrelados a ele).
 import type { APIRoute } from 'astro';
-import { createSupabaseServer } from '../../../lib/supabaseServer';
+import { createSupabaseServer, origemSuspeita } from '../../../lib/supabaseServer';
 
 const json = (status: number, body: object) =>
   new Response(JSON.stringify(body), {
@@ -21,6 +21,7 @@ interface QuestaoPayload {
 }
 
 export const POST: APIRoute = async (context) => {
+  if (origemSuspeita(context.request, context.url)) return json(403, { error: 'Origem não permitida.' });
   const requester = context.locals.user;
   if (!requester || (requester.role !== 'adm' && requester.role !== 'coordenador')) {
     return json(403, { error: 'Só coordenadores e ADMs postam aulas.' });
@@ -79,10 +80,15 @@ export const POST: APIRoute = async (context) => {
     slug = String(p.slugOriginal ?? '');
     const { data: existente } = await supabase
       .from('lessons')
-      .select('slug, categoria, materia_slug, materia_nome, bimestre, semana')
+      .select('slug, categoria, materia_slug, materia_nome, bimestre, semana, sala_id')
       .eq('slug', slug)
       .maybeSingle();
     if (!existente) return json(404, { error: 'Aula não encontrada pra editar.' });
+    // Isolamento por sala: coordenador só edita aula da própria sala (o RLS
+    // reforça no banco; aqui é pra dar erro claro em vez de um update vazio).
+    if (requester.role === 'coordenador' && existente.sala_id !== requester.salaId) {
+      return json(403, { error: 'Você só pode editar aulas da sua sala.' });
+    }
     categoria = existente.categoria;
     materiaSlug = existente.materia_slug;
     materiaNome = String(p.materiaNome ?? existente.materia_nome).trim() || existente.materia_nome;

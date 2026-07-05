@@ -4,7 +4,7 @@
 // Requer SUPABASE_SERVICE_ROLE_KEY no ambiente do servidor (Admin API).
 import type { APIRoute } from 'astro';
 import { createClient } from '@supabase/supabase-js';
-import { createSupabaseServer, senhaPadrao } from '../../../lib/supabaseServer';
+import { createSupabaseServer, senhaPadrao, origemSuspeita } from '../../../lib/supabaseServer';
 
 const json = (status: number, body: object) =>
   new Response(JSON.stringify(body), {
@@ -13,6 +13,7 @@ const json = (status: number, body: object) =>
   });
 
 export const POST: APIRoute = async (context) => {
+  if (origemSuspeita(context.request, context.url)) return json(403, { error: 'Origem não permitida.' });
   const requester = context.locals.user;
   if (!requester || (requester.role !== 'adm' && requester.role !== 'coordenador')) {
     return json(403, { error: 'Só coordenadores e ADMs redefinem senhas.' });

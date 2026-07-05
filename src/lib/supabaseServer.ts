@@ -32,6 +32,23 @@ export function usernameParaEmail(username: string): string {
   return `${username.trim().toLowerCase()}@caderno.local`;
 }
 
+// Anti-CSRF: recusa uma requisição de escrita só quando há evidência EXPLÍCITA
+// de origem cruzada (Origin/Referer de outro site). Ausência dos dois é aceita
+// (alguns navegadores/proxies omitem), então não quebra formulário same-origin.
+export function origemSuspeita(request: Request, url: URL): boolean {
+  const origin = request.headers.get('origin');
+  if (origin) return origin !== url.origin;
+  const referer = request.headers.get('referer');
+  if (referer) {
+    try {
+      return new URL(referer).origin !== url.origin;
+    } catch {
+      return true;
+    }
+  }
+  return false;
+}
+
 export const USERNAME_RULE = /^[a-z0-9][a-z0-9._-]{2,29}$/;
 
 // Senha padrão do primeiro acesso: nome.sobrenome@ano (ex: joao.silva@2026).

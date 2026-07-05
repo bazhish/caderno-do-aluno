@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro';
-import { createSupabaseServer, usernameParaEmail } from '../../../lib/supabaseServer';
+import { createSupabaseServer, usernameParaEmail, origemSuspeita } from '../../../lib/supabaseServer';
 
 export const POST: APIRoute = async (context) => {
+  if (origemSuspeita(context.request, context.url)) return context.redirect('/login?erro=origem');
   const form = await context.request.formData();
   const username = String(form.get('username') ?? '').trim().toLowerCase();
   const password = String(form.get('password') ?? '');

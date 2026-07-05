@@ -10,6 +10,7 @@ import {
   usernameParaEmail,
   senhaPadrao,
   USERNAME_RULE,
+  origemSuspeita,
 } from '../../../lib/supabaseServer';
 
 const json = (status: number, body: object) =>
@@ -19,6 +20,7 @@ const json = (status: number, body: object) =>
   });
 
 export const POST: APIRoute = async (context) => {
+  if (origemSuspeita(context.request, context.url)) return json(403, { error: 'Origem não permitida.' });
   const requester = context.locals.user;
   if (!requester || (requester.role !== 'adm' && requester.role !== 'coordenador')) {
     return json(403, { error: 'Só coordenadores e ADMs registram contas.' });

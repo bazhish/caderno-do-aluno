@@ -8,7 +8,9 @@ const PUBLIC_PATHS = [
   /^\/api\/auth\/login\/?$/,
   /^\/_astro\//,
   /^\/_image/,
-  /^\/favicon/,
+  // Estáticos de raiz (ícones, robots, manifest) — servidos pra aba do
+  // navegador e crawlers antes do login. Só extensões de asset, nada sensível.
+  /^\/[\w.-]+\.(?:svg|png|jpe?g|ico|webp|txt|xml|webmanifest|json)$/i,
 ];
 
 export const onRequest = defineMiddleware(async (context, next) => {
