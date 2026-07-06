@@ -18,6 +18,9 @@
   --color-ds: #3f7d58;
   --color-ds-soft: #dbebe0;
 
+  --color-salas: #7a5a9e;
+  --color-salas-soft: #e6ddf0;
+
   --color-line: #c9c2a8;
 }
 
@@ -33,6 +36,7 @@ html[data-tema='escuro'] {
   --color-enem-soft: #4a2b24;
   --color-escolar-soft: #26374d;
   --color-ds-soft: #25402f;
+  --color-salas-soft: #382b4a;
 }
 /* Os utilitários bg-white/* do Tailwind são literais — no escuro viram um
    véu clarinho sobre a folha. */

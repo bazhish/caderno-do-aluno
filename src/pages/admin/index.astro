@@ -11,8 +11,8 @@ const isAdm = user.role === 'adm';
 const supabase = createSupabaseServer(Astro);
 const [{ data: salas }, { data: cursos }, { data: perfis }, { data: privados }, { data: aulas }, metricasRes] =
   await Promise.all([
-    supabase.from('salas').select('id, nome, ano').order('nome'),
-    supabase.from('cursos').select('slug, nome').order('nome'),
+    supabase.from('salas').select('id, nome, ano, curso_id').order('ano').order('nome'),
+    supabase.from('cursos').select('id, slug, nome').order('nome'),
     supabase
       .from('profiles')
       .select('*') // '*' degrada bem: materia/fundador só existem após o schema-v5
@@ -31,6 +31,12 @@ const metricas: Record<string, number> | null = metricasRes.error ? null : metri
 const nomePorId = new Map((privados ?? []).map((p) => [p.user_id, p.nome_completo]));
 const salaPorId = new Map((salas ?? []).map((s) => [s.id, s.nome]));
 const minhaSala = user.salaId ? (salaPorId.get(user.salaId) ?? '—') : null;
+
+const cursoPorId = new Map((cursos ?? []).map((c) => [c.id, c.nome]));
+const contasPorSala = new Map<string, number>();
+for (const p of perfis ?? []) {
+  if (p.sala_id) contasPorSala.set(p.sala_id, (contasPorSala.get(p.sala_id) ?? 0) + 1);
+}
 
 const rotulosMetricas: [string, string][] = [
   ['usuarios', 'contas'],
@@ -178,11 +184,11 @@ const rotulosMetricas: [string, string][] = [
 
     {isAdm && (
       <section class="rounded-lg border border-paper-dark bg-white/50 p-5">
-        <h2 class="font-display text-lg font-bold text-ink mb-1">Criar sala</h2>
+        <h2 class="font-display text-lg font-bold text-ink mb-1">Gestão de salas</h2>
         <p class="font-body text-xs text-ink-soft mb-4 leading-relaxed">
           Ex: "3º DS A". Salas de 1º ano não têm curso.
         </p>
-        <form id="form-sala" class="flex flex-col gap-3">
+        <form id="form-sala" class="flex flex-col gap-3 mb-5 pb-5 border-b border-paper-dark">
           <input
             type="text"
             name="nome"
@@ -209,10 +215,49 @@ const rotulosMetricas: [string, string][] = [
             type="submit"
             class="font-display font-bold text-sm px-5 py-2.5 rounded-md text-white bg-escolar hover:opacity-90 transition-opacity self-start"
           >
-            Criar sala
+            + Criar sala
           </button>
           <p id="resultado-sala" class="font-body text-xs leading-relaxed"></p>
         </form>
+
+        <p class="font-mono text-[11px] uppercase tracking-widest text-ink-soft mb-2">
+          Salas existentes ({(salas ?? []).length})
+        </p>
+        {(salas ?? []).length === 0 ? (
+          <p class="font-body text-xs text-ink-soft">Nenhuma sala criada ainda.</p>
+        ) : (
+          <ul class="flex flex-col gap-2 list-none p-0 m-0 max-h-80 overflow-y-auto">
+            {(salas ?? []).map((s) => (
+              <li class="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-paper-dark bg-white/40 px-3 py-2">
+                <span class="font-body text-sm text-ink font-medium">{s.nome}</span>
+                <span class="font-mono text-[10px] text-ink-soft">{s.ano}º ano</span>
+                <span class="font-mono text-[10px] text-ink-soft">
+                  {s.curso_id ? (cursoPorId.get(s.curso_id) ?? 'curso') : 'regular'}
+                </span>
+                <span class="font-mono text-[10px] text-ink-soft">
+                  {contasPorSala.get(s.id) ?? 0} conta(s)
+                </span>
+                <span class="ml-auto flex gap-3">
+                  <button
+                    type="button"
+                    data-editar-sala={s.id}
+                    data-nome={s.nome}
+                    data-ano={s.ano}
+                    data-curso={s.curso_id ? (cursos ?? []).find((c) => c.id === s.curso_id)?.slug ?? '' : ''}
+                    class="font-mono text-[11px] text-ink-soft hover:text-ink underline underline-offset-2"
+                  >editar</button>
+                  <button
+                    type="button"
+                    data-excluir-sala={s.id}
+                    data-nome-sala={s.nome}
+                    class="font-mono text-[11px] text-ink-soft hover:text-enem underline underline-offset-2"
+                  >excluir</button>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p id="resultado-gestao-sala" class="font-body text-xs mt-2"></p>
       </section>
     )}
   </div>
@@ -469,6 +514,67 @@ const rotulosMetricas: [string, string][] = [
         )
           return;
         acaoConta('/api/usuarios/excluir', { username }, `Conta @${username} excluída.`);
+      });
+    });
+
+    // gestão de salas (só ADM): editar e excluir
+    async function acaoSala(url: string, body: object, sucesso: string) {
+      const resultado = document.getElementById('resultado-gestao-sala')!;
+      resultado.textContent = 'Aplicando…';
+      resultado.className = 'font-body text-xs mt-2 text-ink-soft';
+      try {
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const corpo = await resp.json();
+        if (!resp.ok) throw new Error(corpo.error ?? 'Falha');
+        resultado.textContent = '✓ ' + sucesso;
+        resultado.className = 'font-body text-xs mt-2 text-ds';
+        setTimeout(() => location.reload(), 900);
+      } catch (err) {
+        resultado.textContent = '✕ ' + (err instanceof Error ? err.message : 'Erro');
+        resultado.className = 'font-body text-xs mt-2 text-enem';
+      }
+    }
+
+    document.querySelectorAll<HTMLButtonElement>('[data-editar-sala]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.editarSala!;
+        const nomeAtual = btn.dataset.nome!;
+        const anoAtual = btn.dataset.ano!;
+        const cursoAtual = btn.dataset.curso ?? '';
+
+        const nome = prompt('Nome da sala:', nomeAtual)?.trim();
+        if (!nome) return;
+        const ano = prompt('Ano (1, 2 ou 3):', anoAtual)?.trim();
+        if (!ano || !['1', '2', '3'].includes(ano)) {
+          alert('Ano inválido. Use 1, 2 ou 3.');
+          return;
+        }
+        const cursoSlug = prompt(
+          'Slug do curso (ex: ds, administracao) — deixe em branco pra regular:',
+          cursoAtual
+        )?.trim() ?? '';
+
+        acaoSala(
+          '/api/salas/editar',
+          { id, nome, ano: Number(ano), cursoSlug: cursoSlug || null },
+          `Sala "${nome}" atualizada.`
+        );
+      });
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('[data-excluir-sala]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.excluirSala!;
+        const nome = btn.dataset.nomeSala!;
+        if (
+          !confirm(`Excluir a sala "${nome}"? Só funciona se não houver conta ou aula vinculada.`)
+        )
+          return;
+        acaoSala('/api/salas/excluir', { id }, `Sala "${nome}" excluída.`);
       });
     });
   </script>

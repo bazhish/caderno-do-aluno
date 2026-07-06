@@ -156,11 +156,12 @@ palavras_bloqueadas  (termo)                             → censura automática
 | 2 | Comentários em tempo real + censura automática (trigger no banco + lista `palavras_bloqueadas`) + quiz com banco de questões sorteadas sem repetição por aluno + visão "minha sala" no hub | ✅ feito |
 | 3 | Formulário de postagem de aula no site (aulas no banco convivendo com o .mdx legado) + Pause e Responda (1 questão/aula no curso) + atividades práticas | ✅ feito |
 | 4 | Configurações (tema escuro/fonte), painel ADM completo (métricas, redefinir senha, gerenciar aulas), suporte a service_role | ✅ feito* |
+| 5 | Papel professor + ADM fundador, trocar papel/renomear/excluir conta, gestão completa de salas (editar/excluir, não só criar) e aba de navegação dedicada "Salas" | ✅ feito |
 
 \* Pendências que dependem do dono: (1) colar a `SUPABASE_SERVICE_ROLE_KEY` nas variáveis da
 Vercel — ativa "redefinir senha" e permite desligar o signup público no painel do Supabase
 (Authentication → Sign In/Providers → desativar "Allow new users to sign up"); (2) rodar no
-SQL Editor, **nesta ordem**: o bloco final do `schema-v3.sql`, o `schema-v4.sql` inteiro e o
-`schema-v5.sql` inteiro (professor, fundador, excluir/renomear/trocar papel) — e rodar de
-novo o `seed-questoes.sql` (os slugs de matemática do ENEM mudaram: `enem/matematica/…` →
-`enem/geometria/…`).
+SQL Editor, **nesta ordem**: o bloco final do `schema-v3.sql`, o `schema-v4.sql`, o
+`schema-v5.sql` (professor, fundador, excluir/renomear/trocar papel) e o `schema-v6.sql`
+(editar/excluir sala) — e rodar de novo o `seed-questoes.sql` (os slugs de matemática do ENEM
+mudaram: `enem/matematica/…` → `enem/geometria/…`).

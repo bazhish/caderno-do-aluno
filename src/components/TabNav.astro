@@ -2,7 +2,7 @@
 import { u } from '../lib/url';
 
 interface Props {
-  active?: 'hub' | 'enem' | 'escolar' | 'ds' | null;
+  active?: 'hub' | 'enem' | 'escolar' | 'ds' | 'salas' | null;
 }
 const { active = null } = Astro.props;
 
@@ -12,24 +12,37 @@ const tabs = [
   { key: 'escolar', label: 'Escolar', href: '/escolar', color: 'var(--color-escolar)', soft: 'var(--color-escolar-soft)' },
   { key: 'ds', label: 'DS', href: '/ds', color: 'var(--color-ds)', soft: 'var(--color-ds-soft)' },
 ];
+// Aba Salas: fica sozinha do lado oposto (direita) das abas de conteúdo —
+// não é uma categoria de conteúdo, é navegação/troca de sala.
+const salaTab = { key: 'salas', label: 'Salas', href: '/salas', color: 'var(--color-salas)', soft: 'var(--color-salas-soft)' };
 ---
 
 <!-- z-index: a folha (.paper-sheet, z 5) cobre a base das abas inativas (z 1-4),
      como divisórias coladas nas folhas de trás; só a aba ativa (z 30) fica na frente. -->
-<nav class="flex gap-1.5 md:gap-2 px-3 md:px-10 flex-wrap" aria-label="Categorias">
-  {tabs.map((tab, i) => {
-    const isActive = active === tab.key;
-    return (
-      <a
-        href={u(tab.href)}
-        class="tab font-display font-bold text-xs sm:text-sm md:text-base uppercase tracking-wide px-3.5 sm:px-5 md:px-7 py-2.5 md:py-3 rounded-t-lg transition-all"
-        style={`--tab-color: ${tab.color}; --tab-soft: ${tab.soft}; z-index: ${isActive ? 30 : 4 - i};`}
-        data-active={isActive}
-      >
-        {tab.label}
-      </a>
-    );
-  })}
+<nav class="flex items-end justify-between gap-1.5 md:gap-2 px-3 md:px-10 flex-wrap" aria-label="Categorias">
+  <div class="flex gap-1.5 md:gap-2 flex-wrap">
+    {tabs.map((tab, i) => {
+      const isActive = active === tab.key;
+      return (
+        <a
+          href={u(tab.href)}
+          class="tab font-display font-bold text-xs sm:text-sm md:text-base uppercase tracking-wide px-3.5 sm:px-5 md:px-7 py-2.5 md:py-3 rounded-t-lg transition-all"
+          style={`--tab-color: ${tab.color}; --tab-soft: ${tab.soft}; z-index: ${isActive ? 30 : 4 - i};`}
+          data-active={isActive}
+        >
+          {tab.label}
+        </a>
+      );
+    })}
+  </div>
+  <a
+    href={u(salaTab.href)}
+    class="tab font-display font-bold text-xs sm:text-sm md:text-base uppercase tracking-wide px-3.5 sm:px-5 md:px-7 py-2.5 md:py-3 rounded-t-lg transition-all"
+    style={`--tab-color: ${salaTab.color}; --tab-soft: ${salaTab.soft}; z-index: ${active === salaTab.key ? 30 : 1};`}
+    data-active={active === salaTab.key}
+  >
+    🏫 {salaTab.label}
+  </a>
 </nav>
 
 <style>

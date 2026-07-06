@@ -1,0 +1,106 @@
+---
+import Base from '../../layouts/Base.astro';
+import HelpTip from '../../components/HelpTip.astro';
+import { createSupabaseServer, supabaseConfigured } from '../../lib/supabaseServer';
+import { salaEmVisao } from '../../lib/lessonsRepo';
+
+// Aba dedicada de navegação entre salas — o conteúdo é aberto entre salas,
+// então trocar aqui só muda o que as listas de Escolar/DS destacam por padrão
+// (o mesmo cookie usado pelo seletor no hub).
+const user = Astro.locals.user;
+const salaVisaoId = salaEmVisao(Astro);
+
+interface SalaInfo {
+  id: string;
+  nome: string;
+  ano: number;
+  cursoNome: string | null;
+}
+let salas: SalaInfo[] = [];
+if (supabaseConfigured) {
+  const supabase = createSupabaseServer(Astro);
+  const { data } = await supabase
+    .from('salas')
+    .select('id, nome, ano, cursos(nome)')
+    .order('ano')
+    .order('nome');
+  salas = (data ?? []).map((s) => ({
+    id: s.id,
+    nome: s.nome,
+    ano: s.ano,
+    cursoNome: (s.cursos as any)?.nome ?? null,
+  }));
+}
+
+const porAno = new Map<number, SalaInfo[]>();
+for (const s of salas) {
+  if (!porAno.has(s.ano)) porAno.set(s.ano, []);
+  porAno.get(s.ano)!.push(s);
+}
+---
+
+<Base title="Salas" active="salas" description="Escolha ou troque a sala que você está vendo">
+  <div class="flex items-center gap-2 mb-2">
+    <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--color-salas)">salas</p>
+    <HelpTip title="Como funciona a troca de sala">
+      O conteúdo é aberto entre salas — qualquer aluno logado lê o material de qualquer uma. Esta
+      aba só troca o que fica em destaque por padrão nas listas de Escolar e DS. Sua sala de
+      origem fica marcada com ★; escolher outra é só pra dar uma espiada.
+    </HelpTip>
+  </div>
+  <h1 class="font-display text-3xl md:text-4xl font-bold text-ink mb-3">Escolha uma sala</h1>
+  <p class="font-body text-ink-soft max-w-lg mb-10 leading-relaxed">
+    Clique numa sala pra ver o material dela em destaque no hub e nas abas Escolar/DS.
+  </p>
+
+  {salas.length === 0 ? (
+    <p class="font-body text-sm text-ink-soft rounded-md border border-paper-dark bg-white/40 px-4 py-5">
+      Nenhuma sala cadastrada ainda.
+    </p>
+  ) : (
+    <div class="flex flex-col gap-10">
+      {[...porAno.entries()].map(([ano, lista]) => (
+        <section>
+          <h2 class="font-display text-lg font-bold text-ink mb-4 pb-2 border-b-2 border-line">
+            {ano}º ano
+          </h2>
+          <ul class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 list-none p-0 m-0">
+            {lista.map((s) => {
+              const isVisao = s.id === salaVisaoId;
+              const isMinha = s.id === user?.salaId;
+              return (
+                <li>
+                  <a
+                    href={`/api/salas/ver?id=${s.id}`}
+                    class="block rounded-lg border-2 p-5 hover:-translate-y-0.5 transition-transform no-underline"
+                    style={
+                      isVisao
+                        ? 'border-color: var(--color-salas); background-color: var(--color-salas-soft);'
+                        : 'border-color: var(--color-line); background-color: color-mix(in srgb, var(--color-paper) 92%, white);'
+                    }
+                  >
+                    <h3 class="font-display text-lg font-bold text-ink mb-1">
+                      {s.nome} {isMinha && <span title="sua sala">★</span>}
+                    </h3>
+                    <p class="font-mono text-xs text-ink-soft">{s.cursoNome ?? 'Regular'}</p>
+                    {isVisao && (
+                      <p class="font-mono text-[10px] uppercase tracking-wide mt-2" style="color: var(--color-salas)">
+                        vendo agora
+                      </p>
+                    )}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
+    </div>
+  )}
+
+  {salaVisaoId && (
+    <p class="font-mono text-xs text-ink-soft mt-10">
+      <a href="/api/salas/ver" class="underline underline-offset-2 hover:text-ink">voltar pra minha sala padrão</a>
+    </p>
+  )}
+</Base>

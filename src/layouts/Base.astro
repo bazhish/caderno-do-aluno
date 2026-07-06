@@ -5,7 +5,7 @@ import { u } from '../lib/url';
 
 interface Props {
   title: string;
-  active?: 'hub' | 'enem' | 'escolar' | 'ds' | null;
+  active?: 'hub' | 'enem' | 'escolar' | 'ds' | 'salas' | null;
   description?: string;
 }
 const { title, active = null, description = 'Central de conteúdo da turma' } = Astro.props;
@@ -17,6 +17,7 @@ const accentByTab: Record<string, string> = {
   enem: 'var(--color-enem)',
   escolar: 'var(--color-escolar)',
   ds: 'var(--color-ds)',
+  salas: 'var(--color-salas)',
 };
 const borderColor = active ? accentByTab[active] : 'var(--color-line)';
 ---
