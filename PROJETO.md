@@ -69,7 +69,16 @@ O que muda entre categorias é a parte de exercícios:
 
 - **Coordenadores**: 2 por sala, eleitos pela sala. Fazem tudo **pela interface do site** —
   ninguém instala nada, ninguém precisa de ferramenta de programador.
-- **ADM**: Islan + 1 colega (fundadores).
+- **Professor**: registrado pelo ADM com a **matéria** que leciona (em vez de sala). Lê e
+  comenta com o selo PROF — presença oficial nas discussões.
+- **ADM**: Islan + 1 colega. O **ADM fundador** (o mais antigo — Islan) é especial: só ele
+  altera/exclui contas de outros ADMs, e a conta dele é intocável.
+- **Gestão de contas pelo site** (painel → Contas): registrar (qualquer papel), **trocar
+  papel** (é assim que se trocam os coordenadores após nova eleição), **renomear username**
+  e **excluir conta** — regras aplicadas no banco (funções SECURITY DEFINER), não só na UI.
+- **Troca de sala no hub**: o site abre na visão da própria sala (aluno e coordenador) e o
+  hub tem o seletor "trocar de sala" — espiar outra sala é livre; a troca só muda o que as
+  listas destacam.
 
 ## 5. Contas, login e identidade
 
@@ -150,6 +159,8 @@ palavras_bloqueadas  (termo)                             → censura automática
 
 \* Pendências que dependem do dono: (1) colar a `SUPABASE_SERVICE_ROLE_KEY` nas variáveis da
 Vercel — ativa "redefinir senha" e permite desligar o signup público no painel do Supabase
-(Authentication → Sign In/Providers → desativar "Allow new users to sign up"); (2) rodar
-`supabase/schema-v4.sql` + o bloco final do `schema-v3.sql` no SQL Editor (o dashboard do
-Supabase estava fora do ar no momento do deploy).
+(Authentication → Sign In/Providers → desativar "Allow new users to sign up"); (2) rodar no
+SQL Editor, **nesta ordem**: o bloco final do `schema-v3.sql`, o `schema-v4.sql` inteiro e o
+`schema-v5.sql` inteiro (professor, fundador, excluir/renomear/trocar papel) — e rodar de
+novo o `seed-questoes.sql` (os slugs de matemática do ENEM mudaram: `enem/matematica/…` →
+`enem/geometria/…`).

@@ -5,7 +5,7 @@ declare namespace App {
     user: {
       id: string;
       username: string;
-      role: 'aluno' | 'coordenador' | 'adm';
+      role: 'aluno' | 'professor' | 'coordenador' | 'adm';
       salaId: string | null;
       mustChangePassword: boolean;
     } | null;

@@ -126,6 +126,11 @@ export default function Comentarios({ slug, accent = 'enem' }) {
                       COORD
                     </span>
                   )}
+                  {c.role === 'professor' && (
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-wide bg-ds-soft text-ds rounded-full px-2 py-0.5">
+                      PROF
+                    </span>
+                  )}
                   <span className="font-mono text-[11px] text-ink-soft">{formatarData(c.created_at)}</span>
                   {canDelete && (
                     <button
@@ -157,6 +162,11 @@ export default function Comentarios({ slug, accent = 'enem' }) {
               {session.user.role === 'coordenador' && (
                 <span className="font-mono text-[10px] font-bold uppercase tracking-wide bg-escolar-soft text-escolar rounded-full px-2 py-0.5">
                   COORD
+                </span>
+              )}
+              {session.user.role === 'professor' && (
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wide bg-ds-soft text-ds rounded-full px-2 py-0.5">
+                  PROF
                 </span>
               )}
             </div>

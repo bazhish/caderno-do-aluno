@@ -26,7 +26,13 @@ export const POST: APIRoute = async (context) => {
     return json(403, { error: 'Só coordenadores e ADMs registram contas.' });
   }
 
-  let payload: { nomeCompleto?: string; username?: string; salaId?: string; papel?: string };
+  let payload: {
+    nomeCompleto?: string;
+    username?: string;
+    salaId?: string;
+    papel?: string;
+    materia?: string;
+  };
   try {
     payload = await context.request.json();
   } catch {
@@ -35,7 +41,11 @@ export const POST: APIRoute = async (context) => {
 
   const nomeCompleto = (payload.nomeCompleto ?? '').trim();
   const username = (payload.username ?? '').trim().toLowerCase();
-  const papel = payload.papel === 'coordenador' ? 'coordenador' : 'aluno';
+  const PAPEIS = ['aluno', 'professor', 'coordenador', 'adm'] as const;
+  const papel = (PAPEIS as readonly string[]).includes(payload.papel ?? '')
+    ? (payload.papel as (typeof PAPEIS)[number])
+    : 'aluno';
+  const materia = (payload.materia ?? '').trim();
 
   if (nomeCompleto.split(/\s+/).length < 2) {
     return json(400, { error: 'Informe o nome completo (nome e sobrenome).' });
@@ -46,13 +56,24 @@ export const POST: APIRoute = async (context) => {
         'Username inválido: 3 a 30 caracteres, só minúsculas, números, ponto, hífen ou underline. Padrão: nome.inicial.sala',
     });
   }
-  if (papel === 'coordenador' && requester.role !== 'adm') {
-    return json(403, { error: 'Só o ADM registra coordenadores.' });
+  if (papel !== 'aluno' && requester.role !== 'adm') {
+    return json(403, { error: 'Só o ADM registra professores, coordenadores e ADMs.' });
+  }
+  if (papel === 'professor' && !materia) {
+    return json(400, { error: 'Professor precisa da matéria que leciona.' });
   }
 
-  // Coordenador só registra na própria sala; ADM escolhe a sala.
+  // Coordenador só registra alunos na própria sala; ADM escolhe a sala.
+  // Professor tem matéria em vez de sala; ADM não tem nenhum dos dois.
   const salaId =
-    requester.role === 'adm' ? (payload.salaId || null) : requester.salaId;
+    requester.role !== 'adm'
+      ? requester.salaId
+      : papel === 'professor' || papel === 'adm'
+        ? null
+        : payload.salaId || null;
+  if (papel === 'coordenador' && !salaId) {
+    return json(400, { error: 'Coordenador precisa de uma sala.' });
+  }
 
   const supabase = createSupabaseServer(context);
 
@@ -73,6 +94,7 @@ export const POST: APIRoute = async (context) => {
     username,
     nome_completo: nomeCompleto,
     sala_id: salaId ?? '',
+    materia: papel === 'professor' ? materia : '',
     must_change_password: true,
   };
 
@@ -111,11 +133,12 @@ export const POST: APIRoute = async (context) => {
     return json(500, { error: `Não deu pra criar a conta: ${error.message}` });
   }
 
-  // Promoção a coordenador: função no banco que exige papel de ADM de quem chama.
-  if (papel === 'coordenador') {
+  // Promoção ao papel pedido: função no banco que exige papel de ADM de quem
+  // chama (a conta sempre nasce como aluno — o trigger ignora papel do cadastro).
+  if (papel !== 'aluno') {
     const { error: promoteError } = await supabase.rpc('promote_user', {
       target_username: username,
-      new_role: 'coordenador',
+      new_role: papel,
     });
     if (promoteError) {
       return json(500, {

@@ -34,6 +34,15 @@ export interface AulaDb {
 
 marked.setOptions({ gfm: true, breaks: true });
 
+// Sala "em visão": a escolhida no hub (cookie) ou, por padrão, a sala do
+// próprio usuário. É preferência de navegação — não é permissão (o conteúdo
+// é aberto entre salas; páginas de aula não filtram nada).
+export function salaEmVisao(ctx: AstroGlobal): string | null {
+  const cookie = ctx.cookies?.get('cdt-sala-visao')?.value;
+  if (cookie && /^[0-9a-f-]{36}$/i.test(cookie)) return cookie;
+  return (ctx as any).locals?.user?.salaId ?? null;
+}
+
 // Renderiza markdown escapando QUALQUER HTML cru antes — coordenador escreve
 // markdown, nunca injeta tags (proteção XSS simples e suficiente aqui).
 export function renderMarkdown(md: string): string {
@@ -45,11 +54,16 @@ async function listarDb(ctx: AstroGlobal, categoria: Categoria): Promise<Entrada
   if (!supabaseConfigured) return [];
   try {
     const supabase = createSupabaseServer(ctx);
-    const { data } = await supabase
+    let query = supabase
       .from('lessons')
       .select('slug, materia_nome, title, ordem')
       .eq('categoria', categoria)
       .eq('status', 'publicado');
+    // Listagens mostram o material geral (sem sala) + o da sala em visão.
+    // Sem sala em visão (ex: ADM sem sala), mostra tudo.
+    const sala = salaEmVisao(ctx);
+    if (sala) query = query.or(`sala_id.is.null,sala_id.eq.${sala}`);
+    const { data } = await query;
     return (data ?? []).map((l) => ({
       id: l.slug.split('/').slice(1).join('/'),
       data: { subject: l.materia_nome, order: l.ordem ?? 1, title: l.title },

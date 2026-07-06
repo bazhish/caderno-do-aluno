@@ -46,7 +46,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.user = {
     id: user.id,
     username: profile?.username ?? '',
-    role: (profile?.role ?? 'aluno') as 'aluno' | 'coordenador' | 'adm',
+    role: (profile?.role ?? 'aluno') as 'aluno' | 'professor' | 'coordenador' | 'adm',
     salaId: profile?.sala_id ?? null,
     mustChangePassword: profile?.must_change_password ?? false,
   };

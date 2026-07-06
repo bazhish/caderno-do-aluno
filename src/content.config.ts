@@ -44,6 +44,13 @@ const resourcesSchema = z.object({
     .optional(),
 });
 
+// Atividade prática (curso técnico): roteiro em texto livre/markdown que
+// ensina a colocar a teoria em prática — sem correção automática, sem gabarito.
+const atividadeSchema = z.object({
+  titulo: z.string(),
+  roteiro: z.string(),
+});
+
 // Schema compartilhado pelas 3 coleções (enem, escolar, ds).
 const lessonSchema = z.object({
   title: z.string(),
@@ -53,6 +60,7 @@ const lessonSchema = z.object({
   order: z.number().default(1),
   resources: resourcesSchema.optional(),
   questions: z.array(questionSchema).length(5),
+  atividades: z.array(atividadeSchema).optional(), // usado nas aulas de curso (DS)
 });
 
 // ENEM: matéria -> tema (sem bimestre/semana)

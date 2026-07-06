@@ -15,7 +15,7 @@ const [{ data: salas }, { data: cursos }, { data: perfis }, { data: privados }, 
     supabase.from('cursos').select('slug, nome').order('nome'),
     supabase
       .from('profiles')
-      .select('id, username, role, sala_id, created_at')
+      .select('*') // '*' degrada bem: materia/fundador só existem após o schema-v5
       .order('created_at', { ascending: false })
       .limit(200),
     supabase.from('profiles_privados').select('user_id, nome_completo'),
@@ -63,10 +63,18 @@ const rotulosMetricas: [string, string][] = [
       <h2 class="font-display text-lg font-bold text-ink">
         Aulas postadas pelo site <span class="font-mono text-xs text-ink-soft">({(aulas ?? []).length})</span>
       </h2>
-      <a
-        href="/admin/aulas/nova"
-        class="font-display font-bold text-sm px-5 py-2.5 rounded-md text-white bg-ds hover:opacity-90 transition-opacity no-underline"
-      >+ Postar aula</a>
+      <span class="flex items-center gap-3">
+        <a
+          href="https://github.com/bazhish/caderno-da-turma/blob/main/POSTAR_AULA.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-mono text-[11px] text-ink-soft hover:text-ink underline underline-offset-2"
+        >modo avançado (GitHub) ↗</a>
+        <a
+          href="/admin/aulas/nova"
+          class="font-display font-bold text-sm px-5 py-2.5 rounded-md text-white bg-ds hover:opacity-90 transition-opacity no-underline"
+        >+ Postar aula</a>
+      </span>
     </div>
     {(aulas ?? []).length === 0 ? (
       <p class="font-body text-sm text-ink-soft rounded-md border border-paper-dark bg-white/40 px-4 py-5">
@@ -120,25 +128,43 @@ const rotulosMetricas: [string, string][] = [
           required
           class="w-full rounded-md border border-paper-dark bg-white/80 px-3 py-2 font-body text-sm text-ink focus:outline-none focus:border-ink-soft"
         />
-        {isAdm ? (
-          <select
-            name="salaId"
-            class="w-full rounded-md border border-paper-dark bg-white/80 px-3 py-2 font-body text-sm text-ink focus:outline-none"
-          >
-            <option value="">Sem sala (ex: ADM)</option>
-            {(salas ?? []).map((s) => <option value={s.id}>{s.nome}</option>)}
-          </select>
-        ) : (
-          <p class="font-mono text-[11px] text-ink-soft">Sala: {minhaSala ?? 'sem sala definida'}</p>
-        )}
         {isAdm && (
           <select
             name="papel"
+            id="sel-papel"
             class="w-full rounded-md border border-paper-dark bg-white/80 px-3 py-2 font-body text-sm text-ink focus:outline-none"
           >
             <option value="aluno">Aluno</option>
+            <option value="professor">Professor</option>
             <option value="coordenador">Coordenador</option>
+            <option value="adm">ADM</option>
           </select>
+        )}
+        {isAdm ? (
+          <>
+            <select
+              name="salaId"
+              id="campo-sala"
+              class="w-full rounded-md border border-paper-dark bg-white/80 px-3 py-2 font-body text-sm text-ink focus:outline-none"
+            >
+              <option value="">Escolha a sala…</option>
+              {(salas ?? []).map((s) => <option value={s.id}>{s.nome}</option>)}
+            </select>
+            <input
+              type="text"
+              name="materia"
+              id="campo-materia"
+              placeholder="Matéria que leciona (ex: Matemática)"
+              style="display: none"
+              class="w-full rounded-md border border-paper-dark bg-white/80 px-3 py-2 font-body text-sm text-ink focus:outline-none focus:border-ink-soft"
+            />
+            <p id="dica-papel" class="font-mono text-[11px] text-ink-soft leading-relaxed">
+              Aluno e coordenador entram numa sala. Professor é registrado pela matéria.
+              ADM não tem sala nem matéria — tem todas as permissões.
+            </p>
+          </>
+        ) : (
+          <p class="font-mono text-[11px] text-ink-soft">Sala: {minhaSala ?? 'sem sala definida'}</p>
         )}
         <button
           type="submit"
@@ -201,9 +227,9 @@ const rotulosMetricas: [string, string][] = [
           <tr class="font-mono text-[11px] uppercase tracking-wide text-ink-soft border-b border-paper-dark">
             <th class="px-4 py-3">Username</th>
             <th class="px-4 py-3">Nome completo</th>
-            <th class="px-4 py-3">Sala</th>
+            <th class="px-4 py-3">Sala / Matéria</th>
             <th class="px-4 py-3">Papel</th>
-            <th class="px-4 py-3">Suporte</th>
+            <th class="px-4 py-3">Ações</th>
           </tr>
         </thead>
         <tbody class="font-body text-sm text-ink">
@@ -211,27 +237,56 @@ const rotulosMetricas: [string, string][] = [
             <tr class="border-b border-paper-dark/50 last:border-0">
               <td class="px-4 py-2.5 font-mono text-xs">@{p.username}</td>
               <td class="px-4 py-2.5">{nomePorId.get(p.id) ?? '—'}</td>
-              <td class="px-4 py-2.5">{p.sala_id ? (salaPorId.get(p.sala_id) ?? '—') : '—'}</td>
+              <td class="px-4 py-2.5">
+                {p.role === 'professor'
+                  ? (p.materia ?? '—')
+                  : p.sala_id
+                    ? (salaPorId.get(p.sala_id) ?? '—')
+                    : '—'}
+              </td>
               <td class="px-4 py-2.5">
                 <span
                   class:list={[
                     'font-mono text-[10px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5',
                     p.role === 'adm' && 'bg-ink text-paper',
                     p.role === 'coordenador' && 'bg-escolar-soft text-escolar',
+                    p.role === 'professor' && 'bg-ds-soft text-ds',
                     p.role === 'aluno' && 'bg-paper-dark/60 text-ink-soft',
                   ]}
                 >
-                  {p.role}
+                  {p.fundador ? 'adm ★' : p.role}
                 </span>
               </td>
               <td class="px-4 py-2.5">
-                {(isAdm || (p.role === 'aluno' && p.sala_id === user.salaId)) && p.id !== user.id && (
-                  <button
-                    type="button"
-                    data-redefinir={p.username}
-                    class="font-mono text-[11px] text-ink-soft hover:text-ink underline underline-offset-2"
-                  >redefinir senha</button>
-                )}
+                <span class="flex flex-wrap gap-x-3 gap-y-1">
+                  {(isAdm || (p.role === 'aluno' && p.sala_id === user.salaId)) && p.id !== user.id && (
+                    <button
+                      type="button"
+                      data-redefinir={p.username}
+                      class="font-mono text-[11px] text-ink-soft hover:text-ink underline underline-offset-2"
+                    >redefinir senha</button>
+                  )}
+                  {isAdm && !p.fundador && p.id !== user.id && (
+                    <>
+                      <button
+                        type="button"
+                        data-papel={p.username}
+                        data-papel-atual={p.role}
+                        class="font-mono text-[11px] text-ink-soft hover:text-ink underline underline-offset-2"
+                      >trocar papel</button>
+                      <button
+                        type="button"
+                        data-renomear={p.username}
+                        class="font-mono text-[11px] text-ink-soft hover:text-ink underline underline-offset-2"
+                      >renomear</button>
+                      <button
+                        type="button"
+                        data-excluir-usuario={p.username}
+                        class="font-mono text-[11px] text-ink-soft hover:text-enem underline underline-offset-2"
+                      >excluir</button>
+                    </>
+                  )}
+                </span>
               </td>
             </tr>
           ))}
@@ -261,6 +316,22 @@ const rotulosMetricas: [string, string][] = [
         return null;
       }
     }
+
+    // Papel escolhido controla o campo extra: sala (aluno/coordenador),
+    // matéria (professor) ou nenhum (ADM).
+    const selPapel = document.getElementById('sel-papel') as HTMLSelectElement | null;
+    const campoSala = document.getElementById('campo-sala') as HTMLSelectElement | null;
+    const campoMateria = document.getElementById('campo-materia') as HTMLInputElement | null;
+    function ajustarCampos() {
+      if (!selPapel || !campoSala || !campoMateria) return;
+      const papel = selPapel.value;
+      campoSala.style.display = papel === 'aluno' || papel === 'coordenador' ? '' : 'none';
+      campoMateria.style.display = papel === 'professor' ? '' : 'none';
+      if (papel !== 'professor') campoMateria.value = '';
+      if (papel === 'professor' || papel === 'adm') campoSala.value = '';
+    }
+    selPapel?.addEventListener('change', ajustarCampos);
+    ajustarCampos();
 
     const formUsuario = document.getElementById('form-usuario') as HTMLFormElement | null;
     formUsuario?.addEventListener('submit', async (e) => {
@@ -333,6 +404,71 @@ const rotulosMetricas: [string, string][] = [
           resultado.textContent = '✕ ' + (err instanceof Error ? err.message : 'Erro');
           resultado.className = 'font-body text-xs mt-2 text-enem';
         }
+      });
+    });
+
+    // ações de conta (só ADM): trocar papel, renomear, excluir
+    async function acaoConta(url: string, body: object, sucesso: string) {
+      const resultado = document.getElementById('resultado-senha')!;
+      resultado.textContent = 'Aplicando…';
+      resultado.className = 'font-body text-xs mt-2 text-ink-soft';
+      try {
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const corpo = await resp.json();
+        if (!resp.ok) throw new Error(corpo.error ?? 'Falha');
+        resultado.textContent = '✓ ' + sucesso;
+        resultado.className = 'font-body text-xs mt-2 text-ds';
+        setTimeout(() => location.reload(), 900);
+      } catch (err) {
+        resultado.textContent = '✕ ' + (err instanceof Error ? err.message : 'Erro');
+        resultado.className = 'font-body text-xs mt-2 text-enem';
+      }
+    }
+
+    document.querySelectorAll<HTMLButtonElement>('[data-papel]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const username = btn.dataset.papel!;
+        const atual = btn.dataset.papelAtual!;
+        const papel = prompt(
+          `Novo papel de @${username} (atual: ${atual}).\nDigite: aluno, professor, coordenador ou adm`,
+          atual
+        )?.trim().toLowerCase();
+        if (!papel || papel === atual) return;
+        if (!['aluno', 'professor', 'coordenador', 'adm'].includes(papel)) {
+          alert('Papel inválido. Use: aluno, professor, coordenador ou adm.');
+          return;
+        }
+        acaoConta('/api/usuarios/papel', { username, papel }, `@${username} agora é ${papel}.`);
+      });
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('[data-renomear]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const username = btn.dataset.renomear!;
+        const novo = prompt(`Novo username para @${username}:`, username)?.trim().toLowerCase();
+        if (!novo || novo === username) return;
+        acaoConta(
+          '/api/usuarios/renomear',
+          { username, novoUsername: novo },
+          `@${username} renomeado para @${novo}. Avise a pessoa: o login agora é o nome novo.`
+        );
+      });
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('[data-excluir-usuario]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const username = btn.dataset.excluirUsuario!;
+        if (
+          !confirm(
+            `EXCLUIR a conta @${username}?\n\nIsso apaga a conta, os comentários e o histórico de quiz da pessoa. Não tem volta.`
+          )
+        )
+          return;
+        acaoConta('/api/usuarios/excluir', { username }, `Conta @${username} excluída.`);
       });
     });
   </script>
