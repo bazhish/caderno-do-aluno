@@ -1,0 +1,151 @@
+---
+title: "Juros Compostos: Quando o Juro Rende Sobre Juro"
+subject: "Matemática Financeira"
+order: 2
+relevance: >
+  Juros compostos são o regime realmente usado na maioria dos produtos financeiros do mundo real
+  (poupança, financiamentos, cartão de crédito, investimentos) e um dos temas mais recorrentes de
+  Matemática no ENEM, muitas vezes disfarçado em contextos de crescimento populacional ou
+  depreciação de bens.
+quickSummary: >
+  Nos juros compostos, o juro de cada período incide sobre o montante acumulado até aquele momento
+  — "juros sobre juros" — gerando crescimento exponencial. A fórmula central é M = C(1 + i)^t.
+resources:
+  conteudoComplementar:
+    conteudo: "Função Exponencial"
+    comoAjuda: "Juros compostos são, matematicamente, uma aplicação direta de função exponencial — dominar esse tema aprofunda também a compreensão de crescimento populacional e outros fenômenos exponenciais cobrados no ENEM."
+questions:
+  - question: >
+      Um capital de R$ 1.000,00 é aplicado a juros compostos de 10% ao mês, durante 2 meses. Qual
+      é o montante final?
+    options:
+      - "R$ 1.100,00"
+      - "R$ 1.200,00"
+      - "R$ 1.210,00"
+      - "R$ 1.221,00"
+      - "R$ 1.300,00"
+    correctIndex: 2
+    explanation: >
+      M = C(1 + i)^t — M é o montante, C o capital (R$ 1.000), i a taxa (10% = 0,10), t o tempo
+      (2 meses). M = 1000 × (1,10)² = 1000 × 1,21 = R$ 1.210,00.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      A principal diferença entre juros simples e juros compostos é que, nos juros compostos:
+    options:
+      - "O juro de cada período incide sobre o montante acumulado (capital + juros anteriores), gerando crescimento exponencial."
+      - "O juro de cada período incide sempre sobre o capital inicial fixo, como nos juros simples."
+      - "Não há qualquer diferença de crescimento entre os dois regimes ao longo do tempo."
+      - "O crescimento é sempre linear, igual ao dos juros simples."
+      - "Os juros compostos só podem ser aplicados a taxas anuais."
+    correctIndex: 0
+    explanation: >
+      Nos juros compostos, o juro passa a incidir sobre o montante já acumulado (capital + juros
+      de períodos anteriores) — "juros sobre juros" — o que gera crescimento **exponencial**, mais
+      acentuado que o crescimento linear dos juros simples.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      Um capital de R$ 5.000,00 é aplicado a juros compostos de 20% ao ano, durante 3 anos. O
+      montante final será de:
+    options:
+      - "R$ 8.000,00"
+      - "R$ 8.640,00"
+      - "R$ 9.000,00"
+      - "R$ 9.500,00"
+      - "R$ 10.000,00"
+    correctIndex: 1
+    explanation: >
+      M = C(1 + i)^t = 5000 × (1,20)³. Calculando: 1,20³ = 1,20 × 1,20 × 1,20 = 1,728.
+      M = 5000 × 1,728 = R$ 8.640,00.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      Para prazos longos e a mesma taxa de juros, comparando juros simples e juros compostos sobre
+      o mesmo capital inicial, é correto afirmar que:
+    options:
+      - "O montante em juros compostos sempre será igual ao de juros simples, para qualquer prazo."
+      - "O montante em juros compostos tende a ser maior que o de juros simples, e essa diferença cresce cada vez mais à medida que o prazo aumenta."
+      - "O montante em juros simples sempre supera o de juros compostos, para qualquer prazo maior que um período."
+      - "Não é possível comparar os dois regimes matematicamente."
+      - "Os dois regimes produzem sempre exatamente o mesmo crescimento percentual a cada período."
+    correctIndex: 1
+    explanation: >
+      Como os juros compostos capitalizam sobre o montante acumulado, o crescimento é exponencial
+      e supera, cada vez mais, o crescimento linear dos juros simples à medida que o prazo aumenta
+      — a diferença entre os dois regimes cresce com o tempo.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      Um fenômeno de crescimento populacional que aumenta 5% ao ano pode ser modelado pela mesma
+      lógica matemática dos juros compostos porque:
+    options:
+      - "O aumento de cada ano incide sobre a população do ano anterior (já incluindo o crescimento acumulado), assim como o juro composto incide sobre o montante acumulado."
+      - "Crescimento populacional nunca pode ser modelado matematicamente."
+      - "A população cresce sempre na mesma quantidade fixa a cada ano, como nos juros simples."
+      - "Não existe qualquer semelhança matemática entre os dois fenômenos."
+      - "O crescimento populacional é sempre decrescente ao longo do tempo."
+    correctIndex: 0
+    explanation: >
+      Assim como nos juros compostos, o crescimento populacional percentual incide sobre o valor já
+      acumulado do período anterior — por isso a mesma fórmula exponencial M = C(1+i)^t se aplica
+      a esse e a outros fenômenos de crescimento percentual constante.
+    source: "Questão autoral, estilo ENEM"
+---
+
+## Aula Teórica Completa
+
+Juros compostos são o regime de juros mais usado no mundo financeiro real — poupança,
+financiamentos, cartão de crédito e a maioria dos investimentos funcionam nessa lógica. A diferença
+central em relação aos juros simples é que, aqui, o juro de cada período passa a incidir sobre o
+**montante acumulado** (capital + juros já rendidos), e não apenas sobre o capital inicial — por
+isso dizemos que há "juros sobre juros".
+
+### A fórmula dos juros compostos
+
+A fórmula central é **M = C(1 + i)^t**, onde **M** é o montante final, **C** é o capital inicial
+aplicado, **i** é a taxa de juros (sempre em decimal) e **t** é o número de períodos de
+capitalização (na mesma unidade de tempo da taxa). Note o expoente **t**: é essa potência que gera
+o crescimento **exponencial**, diferente do crescimento linear dos juros simples.
+
+### Por que o crescimento é exponencial
+
+Em cada novo período, o juro passa a incidir sobre um valor **maior** que no período anterior
+(porque já inclui os juros acumulados). Isso cria um efeito "bola de neve": quanto mais tempo
+passa, maior fica a diferença entre o crescimento composto e o crescimento linear dos juros
+simples, mesmo partindo da mesma taxa e do mesmo capital inicial.
+
+### Comparando juros simples e compostos na prática
+
+Para prazos curtos, a diferença entre os dois regimes é pequena. Mas, à medida que o tempo passa,
+o montante em juros compostos cresce cada vez mais rápido que o em juros simples — essa é a razão
+pela qual instituições financeiras usam juros compostos em praticamente todos os contratos de
+médio e longo prazo, e por que dívidas em juros compostos (como cartão de crédito) podem crescer
+tão rapidamente se não forem pagas.
+
+### Além do dinheiro: outros fenômenos exponenciais
+
+A mesma fórmula matemática dos juros compostos se aplica a diversos outros fenômenos de
+crescimento (ou decrescimento) percentual constante ao longo do tempo: crescimento populacional,
+valorização ou depreciação de bens, e até a propagação de certos fenômenos. Sempre que um
+percentual incide sobre o valor já acumulado do período anterior (e não sobre um valor fixo
+inicial), a lógica é a mesma dos juros compostos — uma função exponencial.
+
+## Tópicos-Chave para Revisão
+
+<div className="topico">
+
+Juros compostos incidem sobre o **montante acumulado** (capital + juros anteriores) — "juros sobre
+juros" — gerando crescimento **exponencial**, diferente do crescimento linear dos juros simples.
+
+**Fórmula do montante composto: M = C(1 + i)^t** — M é o montante final, C o capital inicial, i a
+taxa (em decimal), t o número de períodos, sempre na mesma unidade da taxa.
+
+Quanto **maior o prazo**, maior a diferença entre juros compostos e juros simples — o efeito
+"bola de neve" se intensifica com o tempo, mesmo com a mesma taxa e capital inicial.
+
+Juros compostos são o regime usado na **maioria dos produtos financeiros reais** (poupança,
+financiamentos, cartão de crédito) — por isso dívidas nesse regime crescem rapidamente se não
+forem quitadas.
+
+A mesma fórmula (M = C(1+i)^t) modela outros fenômenos de **crescimento percentual constante**,
+como crescimento populacional e valorização de bens — sempre que o percentual incide sobre o valor
+já acumulado, e não sobre um valor fixo.
+
+</div>

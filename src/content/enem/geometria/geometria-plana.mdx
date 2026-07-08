@@ -1,166 +1,152 @@
 ---
-title: "Geometria Plana: Área e Perímetro"
+title: "Geometria Plana: Área e Perímetro das Figuras Mais Cobradas"
 subject: "Geometria"
 order: 1
 relevance: >
-  Geometria plana aparece praticamente todo ano no ENEM, quase sempre disfarçada de problema do
-  dia a dia: reforma de uma casa, compra de piso, terreno para plantação. O examinador raramente
-  pede "calcule a área do triângulo" — ele te dá uma planta baixa ou uma situação e espera que
-  você reconheça qual figura está escondida ali dentro.
+  Geometria plana aparece no ENEM quase sempre em contextos práticos — cálculo de área de um
+  terreno, quantidade de material para revestir um piso, dimensionamento de uma horta — exigindo
+  reconhecer a figura certa e aplicar a fórmula correta de área ou perímetro.
 quickSummary: >
-  Área mede a superfície de dentro da figura; perímetro mede o contorno. O segredo no ENEM é
-  reconhecer qual figura está escondida no problema (terreno, piso, parede) e aplicar a fórmula
-  certa — quase sempre retângulo, triângulo ou círculo.
+  Perímetro é a soma de todos os lados de uma figura (o "contorno"); área é a medida da superfície
+  interna. Cada figura plana tem sua fórmula própria de área: retângulo (base × altura), triângulo
+  (base × altura ÷ 2), círculo (π × raio²), entre outras.
 resources:
-  videoAula:
-    link: "https://exemplo.com/videoaula/geometria-plana-enem"
-    duracao: "18 min"
-    motivo: "Mostra como identificar a figura escondida em 4 problemas reais de prova."
-  cursoGratuito:
-    link: "https://exemplo.com/curso/geometria-basica"
-    cargaHoraria: "6h"
-    indicadoPara: "revisão"
-  materiaisAdicionais:
-    exercicios: "Lista com 15 problemas de área e perímetro (exemplo.com/exercicios/geometria)"
-    provaAntiga: "ENEM 2022 — caderno azul, questões 140-145"
-    nivel: "médio"
+  conteudoComplementar:
+    conteudo: "Geometria Espacial (Volume)"
+    comoAjuda: "Depois de dominar área de figuras planas, o próximo passo natural é aprender a calcular o volume de sólidos geométricos, que frequentemente usa a área da base como parte da fórmula."
 questions:
   - question: >
-      Uma família quer trocar o piso de uma sala retangular que mede 4 metros de largura por 5
-      metros de comprimento. Cada caixa de piso cobre 2 m² e não pode ser fracionada. Quantas
-      caixas, no mínimo, devem ser compradas?
+      Um terreno retangular tem 15 metros de largura e 20 metros de comprimento. Qual é a área
+      desse terreno?
     options:
-      - "8 caixas"
-      - "9 caixas"
-      - "10 caixas"
-      - "11 caixas"
-      - "12 caixas"
-    correctIndex: 2
+      - "35 m²"
+      - "70 m²"
+      - "150 m²"
+      - "300 m²"
+      - "600 m²"
+    correctIndex: 3
     explanation: >
-      Área da sala = 4 × 5 = 20 m². Número de caixas = 20 ÷ 2 = 10 caixas exatas. Como a divisão é
-      exata, não é preciso arredondar para cima — a pegadinha aqui é o aluno arredondar sem necessidade.
-    source: "Questão fictícia, estilo ENEM"
+      A = b × h — A é a área, b a base/largura (15 m), h a altura/comprimento (20 m).
+      A = 15 × 20 = 300 m².
+    source: "Questão autoral, estilo ENEM"
   - question: >
-      Um terreno triangular tem base de 12 metros e altura de 8 metros em relação a essa base.
-      Qual é a área desse terreno?
+      Considerando o mesmo terreno retangular de 15 m de largura por 20 m de comprimento, qual é o
+      seu perímetro (o total de cerca necessária para contorná-lo)?
+    options:
+      - "35 m"
+      - "70 m"
+      - "150 m"
+      - "300 m"
+      - "600 m"
+    correctIndex: 1
+    explanation: >
+      P = 2 × (b + h) — P é o perímetro, b a largura (15 m), h o comprimento (20 m).
+      P = 2 × (15 + 20) = 2 × 35 = 70 m.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      Um terreno triangular tem base de 12 metros e altura de 8 metros (medida perpendicularmente à
+      base). Qual é a área desse terreno?
     options:
       - "20 m²"
       - "48 m²"
       - "96 m²"
-      - "40 m²"
-      - "60 m²"
+      - "192 m²"
+      - "24 m²"
     correctIndex: 1
     explanation: >
-      Área do triângulo = (base × altura) ÷ 2 = (12 × 8) ÷ 2 = 96 ÷ 2 = 48 m². O erro mais comum é
-      esquecer de dividir por 2 e marcar 96 m².
-    source: "Questão fictícia, estilo ENEM"
+      A = (b × h) ÷ 2 — A é a área do triângulo, b a base (12 m), h a altura (8 m).
+      A = (12 × 8) ÷ 2 = 96 ÷ 2 = 48 m².
+    source: "Questão autoral, estilo ENEM"
   - question: >
-      Uma praça circular tem raio de 7 metros. Usando π ≈ 22/7, qual é o perímetro (comprimento
-      da circunferência) dessa praça?
+      Uma piscina circular tem raio de 5 metros. Considerando π ≈ 3, qual é, aproximadamente, a
+      área dessa piscina?
     options:
-      - "22 m"
-      - "44 m"
-      - "88 m"
-      - "154 m"
-      - "14 m"
-    correctIndex: 1
-    explanation: >
-      Perímetro da circunferência = 2 × π × r = 2 × (22/7) × 7 = 44 m. O valor 154 m² é a área
-      (π × r²), não o perímetro — confundir as duas fórmulas é o erro mais comum da questão.
-    source: "Questão fictícia, estilo ENEM"
-  - question: >
-      Um pátio retangular tem 60 m² de área. Se a largura desse pátio é 6 metros, qual é o
-      perímetro do pátio?
-    options:
-      - "16 m"
-      - "20 m"
-      - "26 m"
-      - "32 m"
-      - "36 m"
+      - "15 m²"
+      - "30 m²"
+      - "45 m²"
+      - "75 m²"
+      - "150 m²"
     correctIndex: 3
     explanation: >
-      Como área = largura × comprimento, o comprimento é 60 ÷ 6 = 10 m. Perímetro = 2 × (largura +
-      comprimento) = 2 × (6 + 10) = 2 × 16 = 32 m. Quem esquece de multiplicar por 2 no final marca 16 m.
-    source: "Questão fictícia, estilo ENEM"
+      A = π × r² — A é a área do círculo, π a constante (aproximadamente 3, para simplificar o
+      cálculo), r o raio (5 m). A = 3 × 5² = 3 × 25 = 75 m².
+    source: "Questão autoral, estilo ENEM"
   - question: >
-      Uma vidraçaria vai cobrir uma janela trapezoidal cujas bases medem 3 m e 5 m, com altura de
-      2 m entre elas. Qual é a área de vidro necessária?
+      Ao calcular a área de uma figura composta (formada pela junção de um retângulo e um
+      triângulo, por exemplo), a estratégia mais eficiente é:
     options:
-      - "8 m²"
-      - "10 m²"
-      - "16 m²"
-      - "4 m²"
-      - "13 m²"
+      - "Somar diretamente os perímetros das duas figuras, ignorando completamente o cálculo de área."
+      - "Dividir a figura composta em figuras geométricas conhecidas (retângulo, triângulo, círculo), calcular a área de cada uma separadamente e somar (ou subtrair, se for o caso de um recorte) os resultados."
+      - "Multiplicar o perímetro total pela altura da figura, sem qualquer decomposição."
+      - "Calcular apenas a área da maior figura, ignorando as demais partes da composição."
+      - "É impossível calcular a área de qualquer figura composta."
     correctIndex: 1
     explanation: >
-      Área do trapézio = [(base maior + base menor) × altura] ÷ 2 = [(5 + 3) × 2] ÷ 2 = 16 ÷ 2 = 10 m².
-      O erro clássico é esquecer a divisão final por 2.
-    source: "Questão fictícia, estilo ENEM"
+      A estratégia central para figuras compostas é decompô-las em figuras geométricas conhecidas,
+      calcular a área de cada parte separadamente, e somar (ou subtrair, no caso de recortes/vazios)
+      os resultados para obter a área total.
+    source: "Questão autoral, estilo ENEM"
 ---
 
 ## Aula Teórica Completa
 
-Antes de qualquer fórmula, é preciso separar dois conceitos que o ENEM adora confundir: **perímetro** é o contorno de uma figura — se você andasse pela borda dela, perímetro é a distância total que você andaria. **Área** é o espaço que a figura ocupa por dentro — quanto de piso, tinta ou grama seria necessário para cobri-la. Perímetro se mede em metros (m); área se mede em metros quadrados (m²).
+Geometria plana estuda figuras em duas dimensões — largura e comprimento, sem profundidade. Os dois
+conceitos mais cobrados no ENEM são **perímetro** e **área**, e é essencial não confundi-los.
 
-### Retângulo e quadrado
+### Perímetro: a medida do contorno
 
-Um retângulo tem dois pares de lados iguais: largura e comprimento.
+**Perímetro** é a soma de todos os lados de uma figura — é, na prática, "a volta" completa em torno
+dela. Pense em cercar um terreno: a quantidade de cerca necessária é o perímetro. Para qualquer
+polígono, basta somar o comprimento de todos os lados; para um retângulo, a fórmula simplificada é
+**P = 2 × (b + h)**, onde **P** é o perímetro, **b** é a base/largura e **h** é a altura/comprimento.
 
-**Perímetro do retângulo:** P = 2 × (a + b)
-- **P** é o perímetro (o resultado, em metros).
-- **a** é um dos lados do retângulo (por exemplo, a largura), em metros.
-- **b** é o outro lado do retângulo (o comprimento), em metros.
-- O "2 ×" existe porque cada lado se repete duas vezes no contorno (dois lados "a" e dois lados "b").
+### Área: a medida da superfície
 
-**Área do retângulo:** A = a × b
-- **A** é a área (o resultado, em m²).
-- **a** e **b** são os dois lados do retângulo, em metros.
+**Área** mede o "espaço interno" de uma figura — quanto de superfície ela ocupa. Pense em quanto
+piso é necessário para cobrir um cômodo: essa quantidade é a área. Cada figura tem sua própria
+fórmula de área.
 
-O quadrado é só um caso especial de retângulo onde a = b, então a área vira A = a² (lado vezes lado) e o perímetro vira P = 4a.
+### Fórmulas de área das figuras mais cobradas
 
-### Triângulo
+Para o **retângulo**: **A = b × h**, onde **A** é a área, **b** é a base e **h** é a altura. Para o
+**triângulo**: **A = (b × h) ÷ 2**, onde **A** é a área, **b** é a base e **h** é a altura medida
+perpendicularmente à base (o triângulo é "metade" de um retângulo de mesma base e altura). Para o
+**círculo**: **A = π × r²**, onde **A** é a área, **π** (pi) é uma constante (aproximadamente 3,14,
+frequentemente simplificada para 3 em cálculos do ENEM) e **r** é o raio (a distância do centro até
+a borda do círculo).
 
-**Área do triângulo:** A = (b × h) ÷ 2
-- **A** é a área, em m².
-- **b** é a base do triângulo, em metros — qualquer lado que você escolher como referência.
-- **h** é a altura, em metros — a distância medida em linha reta e perpendicular (formando um ângulo de 90°) entre a base escolhida e o vértice oposto a ela.
-- A divisão por 2 existe porque todo triângulo é, na prática, "metade" de um retângulo que o envolve perfeitamente.
+### Figuras compostas: decompor para calcular
 
-### Círculo
+Muitas questões do ENEM apresentam figuras "compostas" — formadas pela junção de duas ou mais
+figuras conhecidas (um retângulo com um triângulo em cima, por exemplo, formando o desenho de uma
+casa). A estratégia central é **decompor** a figura composta em partes conhecidas, calcular a área
+de cada parte separadamente e depois **somar** (ou **subtrair**, se houver um recorte/vazio na
+figura) os resultados para chegar à área total.
 
-**Perímetro do círculo (circunferência):** P = 2 × π × r
-- **P** é o perímetro, em metros.
-- **π** (lê-se "pi") é uma constante que vale aproximadamente 3,14 (ou a fração 22/7 quando a questão pedir esse valor).
-- **r** é o raio, em metros — a distância do centro do círculo até a borda.
+### O erro mais comum: confundir área com perímetro
 
-**Área do círculo:** A = π × r²
-- **A** é a área, em m².
-- **π** é a mesma constante de antes.
-- **r²** é o raio multiplicado por ele mesmo (raio ao quadrado).
-
-A pegadinha clássica do INEP é trocar as duas fórmulas: pedir o perímetro e o aluno calcular a área, ou vice-versa, porque ambas usam π e r.
-
-### Trapézio
-
-**Área do trapézio:** A = [(B + b) × h] ÷ 2
-- **A** é a área, em m².
-- **B** é a base maior, em metros.
-- **b** é a base menor, em metros.
-- **h** é a altura, em metros — a distância perpendicular entre as duas bases.
-- Repare que essa fórmula é parecida com a do triângulo: você soma as duas bases, multiplica pela altura e divide por 2.
+O erro mais frequente em questões de geometria plana é confundir os dois conceitos — usar a fórmula
+de área quando a pergunta pede perímetro, ou vice-versa. Sempre releia o enunciado: se ele fala em
+"cercar", "contornar" ou "quantidade de fio/cerca", é perímetro; se fala em "cobrir", "revestir" ou
+"quantidade de piso/tinta", é área.
 
 ## Tópicos-Chave para Revisão
 
 <div className="topico">
 
-Perímetro **é contorno**, medido em metros; área **é superfície interna**, medida em metros quadrados. Toda questão que menciona "cercar", "murar" ou "passar fita ao redor" está pedindo perímetro. Toda questão que menciona "pavimentar", "pintar" ou "plantar" está pedindo área.
+**Perímetro** é a soma de todos os lados de uma figura (o "contorno"); para o retângulo,
+**P = 2 × (b + h)** — P é o perímetro, b a base, h a altura.
 
-No retângulo, o perímetro soma os quatro lados (P = 2a + 2b) e a área multiplica base por altura (A = a × b). No quadrado, os dois lados são iguais, então a área vira lado ao quadrado.
+**Área** mede a superfície interna de uma figura. Retângulo: **A = b × h**. Triângulo:
+**A = (b × h) ÷ 2**. Círculo: **A = π × r²** (π ≈ 3 ou 3,14).
 
-No triângulo, a área é sempre base vezes altura dividido por dois. A altura precisa ser perpendicular à base escolhida — se o desenho mostrar uma altura "inclinada", geralmente é pegadinha visual.
+Para **figuras compostas**, a estratégia é **decompor** em figuras conhecidas, calcular a área de
+cada parte e **somar** (ou subtrair, em caso de recorte) os resultados.
 
-No círculo, memorize que perímetro usa π × r (uma dimensão) e área usa π × r² (duas dimensões, porque área sempre trabalha com algo "ao quadrado"). Confundir essas duas fórmulas é o erro mais comum do ENEM nesse tópico.
+O erro mais comum é **confundir área com perímetro** — releia o enunciado: "cercar/contornar" pede
+perímetro; "cobrir/revestir" pede área.
 
-No trapézio, a área soma as duas bases paralelas, multiplica pela altura e divide por dois — é basicamente a mesma lógica do triângulo, só que com duas bases em vez de uma.
+Sempre confira as **unidades de medida** (metros, centímetros) antes de aplicar qualquer fórmula —
+inconsistência de unidade é outra fonte comum de erro.
 
 </div>

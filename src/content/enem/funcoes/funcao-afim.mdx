@@ -1,0 +1,142 @@
+---
+title: "Função Afim: Modelando Situações que Crescem de Forma Constante"
+subject: "Funções"
+order: 1
+relevance: >
+  Função afim é o modelo matemático de qualquer situação com crescimento (ou decrescimento)
+  constante — planos de telefonia, corridas de aplicativo, conversão de temperatura — e é um dos
+  temas de função mais recorrentes no ENEM.
+quickSummary: >
+  Uma função afim tem a forma f(x) = a·x + b, onde "a" é a taxa de variação (quanto f(x) muda a
+  cada unidade de x) e "b" é o valor inicial (quando x = 0). O gráfico é sempre uma reta: se a > 0,
+  a reta é crescente; se a < 0, é decrescente.
+resources:
+  conteudoComplementar:
+    conteudo: "Estatística: Medidas de Tendência Central"
+    comoAjuda: "Depois de dominar como modelar crescimento constante com função afim, o próximo passo natural é aprender a resumir e interpretar conjuntos de dados numéricos com estatística."
+questions:
+  - question: >
+      Um plano de telefonia cobra uma taxa fixa de R$ 30,00 mais R$ 0,50 por minuto excedente de
+      ligação. O valor total (f) a pagar, em função dos minutos excedentes (x), é dado por:
+    options:
+      - "f(x) = 30x + 0,50"
+      - "f(x) = 0,50x + 30"
+      - "f(x) = 30 + x"
+      - "f(x) = 0,50 + 30x"
+      - "f(x) = 30 − 0,50x"
+    correctIndex: 1
+    explanation: >
+      f(x) = a·x + b — a é a taxa de variação (R$ 0,50 por minuto), b é o valor fixo/inicial
+      (R$ 30,00). Logo, f(x) = 0,50x + 30.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      Usando o plano de telefonia da questão anterior (f(x) = 0,50x + 30), qual será o valor total
+      a pagar se o cliente usar 40 minutos excedentes?
+    options:
+      - "R$ 30,00"
+      - "R$ 40,00"
+      - "R$ 50,00"
+      - "R$ 60,00"
+      - "R$ 70,00"
+    correctIndex: 2
+    explanation: >
+      f(40) = 0,50 × 40 + 30 = 20 + 30 = R$ 50,00.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      Em uma função afim f(x) = a·x + b, o coeficiente "a" (taxa de variação) sendo negativo indica
+      que:
+    options:
+      - "A função é crescente, ou seja, aumenta conforme x aumenta."
+      - "A função é decrescente, ou seja, diminui conforme x aumenta."
+      - "A função é constante, sem variação."
+      - "O gráfico não é uma reta, mas sim uma parábola."
+      - "O valor de b é obrigatoriamente igual a zero."
+    correctIndex: 1
+    explanation: >
+      Quando o coeficiente angular "a" é negativo, a função afim é decrescente: à medida que x
+      aumenta, f(x) diminui. O gráfico continua sendo uma reta, mas inclinada para baixo.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      Um tanque de água está inicialmente com 500 litros e é esvaziado a uma taxa constante de 20
+      litros por minuto. A função que representa o volume de água (V) em função do tempo em
+      minutos (t) é:
+    options:
+      - "V(t) = 500 + 20t"
+      - "V(t) = 20t − 500"
+      - "V(t) = 500 − 20t"
+      - "V(t) = 500t − 20"
+      - "V(t) = 20 − 500t"
+    correctIndex: 2
+    explanation: >
+      O volume inicial é 500 (valor de b) e diminui 20 litros a cada minuto (taxa de variação
+      negativa, a = −20). Logo, V(t) = 500 − 20t.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      O gráfico de uma função afim f(x) = a·x + b sempre corta o eixo y (eixo vertical) no ponto:
+    options:
+      - "(0, a), pois o coeficiente angular determina o ponto de corte com o eixo y."
+      - "(b, 0), invertendo a ordem das coordenadas."
+      - "(0, b), pois quando x = 0, f(x) = a·0 + b = b."
+      - "(a, b), somando os dois coeficientes."
+      - "A função afim nunca corta o eixo y."
+    correctIndex: 2
+    explanation: >
+      Substituindo x = 0 na função: f(0) = a·0 + b = b. Portanto, o gráfico sempre corta o eixo y
+      no ponto (0, b) — por isso "b" é chamado de valor inicial ou coeficiente linear.
+    source: "Questão autoral, estilo ENEM"
+---
+
+## Aula Teórica Completa
+
+Uma **função afim** (também chamada de função do 1º grau) é qualquer função que pode ser escrita na
+forma **f(x) = a·x + b**, onde **a** e **b** são números fixos (constantes) e **x** é a variável de
+entrada. É o modelo matemático ideal para representar qualquer situação que cresce (ou decresce) de
+forma **constante** — ou seja, sempre na mesma quantidade a cada unidade de variação de x.
+
+### O que representam "a" e "b"
+
+O coeficiente **a**, chamado de **coeficiente angular** ou **taxa de variação**, indica o quanto
+f(x) muda a cada unidade que x aumenta. O coeficiente **b**, chamado de **coeficiente linear** ou
+**valor inicial**, é o valor de f(x) quando x = 0 — é o que você já tem (ou já paga) antes de
+qualquer variação começar a contar.
+
+### O gráfico: sempre uma reta
+
+O gráfico de qualquer função afim é sempre uma **reta**. Se **a > 0**, a função é **crescente**
+(a reta "sobe" da esquerda para a direita). Se **a < 0**, a função é **decrescente** (a reta
+"desce"). O ponto onde a reta cruza o eixo vertical (eixo y) é sempre **(0, b)** — basta substituir
+x = 0 na fórmula para confirmar: f(0) = a·0 + b = b.
+
+### Como montar a função a partir de um problema
+
+O passo mais importante para resolver questões de função afim é identificar corretamente, no
+enunciado, quem é o **valor fixo/inicial** (vira o "b") e quem é a **taxa que se repete a cada
+unidade** (vira o "a"). Em planos de telefonia, por exemplo, a taxa fixa mensal é o "b", e o valor
+por minuto excedente é o "a".
+
+### Crescimento e decrescimento no cotidiano
+
+Situações de **acúmulo** (poupar dinheiro, encher um tanque) tendem a gerar funções crescentes
+(a > 0). Situações de **consumo ou esvaziamento** (gastar saldo, esvaziar um reservatório) tendem
+a gerar funções decrescentes (a < 0, já que o valor final diminui a cada unidade de tempo).
+
+## Tópicos-Chave para Revisão
+
+<div className="topico">
+
+**Função afim: f(x) = a·x + b** — a é a taxa de variação (coeficiente angular), b é o valor
+inicial/fixo (coeficiente linear), x é a variável de entrada.
+
+Se **a > 0**, a função é **crescente**; se **a < 0**, é **decrescente** — o sinal de "a" define a
+direção da reta no gráfico.
+
+O gráfico de toda função afim é uma **reta**, que sempre corta o eixo y no ponto **(0, b)** — basta
+substituir x = 0 na fórmula.
+
+Para montar a função a partir de um problema real, identifique o **valor fixo** (vira b) e a
+**taxa que se repete a cada unidade** (vira a) — esse é o passo decisivo para não errar a montagem.
+
+Situações de **acúmulo** tendem a gerar a > 0 (crescente); situações de **consumo/esvaziamento**
+tendem a gerar a < 0 (decrescente).
+
+</div>

@@ -1,0 +1,155 @@
+---
+title: "Estatística: Média, Mediana e Moda"
+subject: "Estatística e Probabilidade"
+order: 1
+relevance: >
+  As medidas de tendência central são o tema de estatística mais recorrente no ENEM, quase sempre
+  associadas a gráficos ou tabelas de dados reais (salários, notas, idades), exigindo interpretação
+  além do simples cálculo.
+quickSummary: >
+  Média é a soma dos valores dividida pela quantidade de valores. Mediana é o valor central de um
+  conjunto ordenado (ou a média dos dois centrais, se a quantidade for par). Moda é o valor que mais
+  se repete. Cada medida "resume" os dados de forma diferente, e a escolha errada pode distorcer a
+  interpretação de um conjunto de dados.
+resources:
+  conteudoComplementar:
+    conteudo: "Análise de Gráficos e Tabelas"
+    comoAjuda: "As medidas de tendência central são frequentemente extraídas diretamente de gráficos e tabelas — dominar a leitura desses recursos visuais é o complemento direto deste tema."
+questions:
+  - question: >
+      Os salários de 5 funcionários de uma pequena empresa são: R$ 1.500, R$ 1.800, R$ 2.000,
+      R$ 2.200 e R$ 2.500. Qual é a média salarial desse grupo?
+    options:
+      - "R$ 1.800,00"
+      - "R$ 2.000,00"
+      - "R$ 2.100,00"
+      - "R$ 2.200,00"
+      - "R$ 10.000,00"
+    correctIndex: 1
+    explanation: >
+      Média = soma dos valores ÷ quantidade de valores. Soma: 1500+1800+2000+2200+2500 = 10.000.
+      Média = 10.000 ÷ 5 = R$ 2.000,00.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      Considerando o mesmo grupo de 5 salários (R$ 1.500, R$ 1.800, R$ 2.000, R$ 2.200, R$ 2.500,
+      já em ordem crescente), qual é a mediana desse conjunto?
+    options:
+      - "R$ 1.500,00"
+      - "R$ 1.800,00"
+      - "R$ 2.000,00"
+      - "R$ 2.200,00"
+      - "R$ 2.500,00"
+    correctIndex: 2
+    explanation: >
+      Com 5 valores (quantidade ímpar), a mediana é o valor central, na posição 3 (dos 5), depois de
+      ordenados: R$ 2.000,00 — que, nesse caso, coincide com a média.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      Agora considere 6 salários ordenados: R$ 1.200, R$ 1.500, R$ 1.800, R$ 2.200, R$ 2.500,
+      R$ 9.000 (um diretor com salário muito acima dos demais). Qual medida de tendência central
+      melhor representa o "salário típico" desse grupo, evitando distorção pelo valor extremo?
+    options:
+      - "A média, pois é sempre a medida mais representativa em qualquer conjunto de dados."
+      - "A mediana, pois não é distorcida por valores extremos (outliers) como o salário do diretor."
+      - "A moda, pois necessariamente existe um valor que se repete nesse conjunto."
+      - "A soma total dos salários, dividida por 2."
+      - "Não é possível calcular nenhuma medida de tendência central nesse caso."
+    correctIndex: 1
+    explanation: >
+      Valores extremos (outliers), como o salário muito acima da média nesse grupo, distorcem
+      fortemente a média. A mediana é mais robusta a esse tipo de distorção, representando melhor
+      o "valor típico" do conjunto.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      Em uma pesquisa sobre o número de filhos de 10 famílias, os valores obtidos foram: 1, 2, 2,
+      2, 3, 3, 4, 1, 2, 5. Qual é a moda desse conjunto de dados?
+    options:
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+    correctIndex: 1
+    explanation: >
+      Moda é o valor que mais aparece no conjunto. Contando as repetições: o valor 2 aparece 4
+      vezes, mais que qualquer outro valor — logo, a moda é 2.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      Um conjunto de dados em que a média, a mediana e a moda apresentam valores muito diferentes
+      entre si geralmente indica que:
+    options:
+      - "Houve um erro de cálculo, já que as três medidas deveriam ser sempre idênticas."
+      - "A distribuição dos dados provavelmente não é simétrica, podendo conter valores extremos (outliers) ou grande dispersão, exigindo mais de uma medida para uma interpretação completa."
+      - "O conjunto de dados não pode ser analisado estatisticamente."
+      - "A moda deixa de existir nesse tipo de conjunto."
+      - "A mediana sempre será igual a zero nesses casos."
+    correctIndex: 1
+    explanation: >
+      Quando média, mediana e moda divergem bastante, isso é um sinal de assimetria na distribuição
+      dos dados (possivelmente com outliers) — por isso é importante analisar mais de uma medida,
+      e não confiar isoladamente na média.
+    source: "Questão autoral, estilo ENEM"
+---
+
+## Aula Teórica Completa
+
+As **medidas de tendência central** resumem um conjunto de dados em um único valor que representa,
+de alguma forma, o "centro" ou o "típico" daquele conjunto. As três principais são média, mediana e
+moda — e cada uma "resume" os dados de um jeito diferente.
+
+### Média: a soma dividida pela quantidade
+
+A **média aritmética** é calculada somando todos os valores do conjunto e dividindo pelo número de
+valores. É a medida mais conhecida, mas tem uma fraqueza importante: é muito sensível a **valores
+extremos** (outliers) — um único valor muito alto ou muito baixo pode distorcer bastante a média,
+fazendo com que ela não represente bem o "valor típico" do grupo.
+
+### Mediana: o valor do meio
+
+A **mediana** é o valor que fica exatamente no meio do conjunto, depois de todos os dados serem
+**ordenados** (do menor para o maior). Se a quantidade de valores for **ímpar**, a mediana é o
+valor central único. Se for **par**, a mediana é a **média dos dois valores centrais**. A grande
+vantagem da mediana é que ela **não é distorcida** por valores extremos, sendo mais representativa
+em conjuntos com grande dispersão ou outliers (como um grupo de salários com um diretor ganhando
+muito mais que os demais).
+
+### Moda: o valor mais frequente
+
+A **moda** é simplesmente o valor que aparece com **maior frequência** no conjunto de dados. Um
+conjunto pode ter uma moda, mais de uma moda (bimodal, trimodal) ou nenhuma moda (se todos os
+valores aparecerem com a mesma frequência).
+
+### Escolhendo a medida certa para cada situação
+
+Não existe uma medida "melhor" em absoluto — a escolha depende do tipo de dado e do objetivo da
+análise. Para dados numéricos sem outliers relevantes, a média costuma ser suficiente. Quando há
+valores extremos que poderiam distorcer a interpretação (como salários muito discrepantes), a
+mediana é mais indicada. Para identificar o valor mais comum (como o tamanho de roupa mais vendido
+em uma loja), a moda é a medida certa.
+
+### O que a diferença entre as três medidas revela
+
+Quando média, mediana e moda de um conjunto são muito próximas, isso geralmente indica uma
+distribuição de dados relativamente **simétrica**. Quando elas divergem bastante, é sinal de que
+os dados estão **assimétricos**, possivelmente com outliers — um alerta para não confiar
+cegamente em uma única medida na hora de interpretar um conjunto de dados.
+
+## Tópicos-Chave para Revisão
+
+<div className="topico">
+
+**Média** = soma de todos os valores ÷ quantidade de valores — é sensível a **valores extremos**
+(outliers), que podem distorcer sua representatividade.
+
+**Mediana** = valor central do conjunto **ordenado** (ou a média dos dois centrais, se a quantidade
+for par) — não é distorcida por outliers, sendo mais robusta em conjuntos assimétricos.
+
+**Moda** = valor que mais se repete no conjunto — pode haver mais de uma moda ou nenhuma moda.
+
+A escolha da medida ideal depende do contexto: **média** para dados sem grande dispersão, **mediana**
+quando há outliers relevantes, **moda** para identificar o valor mais comum/frequente.
+
+Quando média, mediana e moda **divergem muito** entre si, isso indica assimetria na distribuição
+dos dados — sinal de alerta para não confiar isoladamente na média em uma análise.
+
+</div>

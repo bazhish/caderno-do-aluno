@@ -1,0 +1,146 @@
+---
+title: "Juros Simples: Quando o Juro Incide Sempre Sobre o Mesmo Valor"
+subject: "Matemática Financeira"
+order: 1
+relevance: >
+  Juros simples aparecem em situações de crédito de curto prazo, multas e alguns contratos
+  específicos, e são a porta de entrada da Matemática Financeira no ENEM — pré-requisito direto
+  para entender juros compostos, o tema financeiro mais cobrado da prova.
+quickSummary: >
+  No regime de juros simples, o juro é calculado sempre sobre o capital inicial, sem incorporar
+  juros de períodos anteriores. A fórmula central é J = C·i·t, e o montante final é M = C + J = C(1
+  + i·t).
+resources:
+  conteudoComplementar:
+    conteudo: "Juros Compostos"
+    comoAjuda: "Juros compostos são o regime realmente usado na maioria dos produtos financeiros (poupança, financiamentos, cartão de crédito) — entender a diferença entre os dois regimes evita erros graves na interpretação de contratos reais."
+questions:
+  - question: >
+      Um capital de R$ 2.000,00 é aplicado a juros simples de 5% ao mês, durante 4 meses. Qual é o
+      valor do juro (J) obtido ao final desse período?
+    options:
+      - "R$ 100,00"
+      - "R$ 200,00"
+      - "R$ 400,00"
+      - "R$ 500,00"
+      - "R$ 800,00"
+    correctIndex: 2
+    explanation: >
+      J = C·i·t — J é o juro, C o capital (R$ 2.000), i a taxa (5% = 0,05 ao mês), t o tempo
+      (4 meses). J = 2000 × 0,05 × 4 = R$ 400,00.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      Considerando o mesmo capital de R$ 2.000,00 aplicado a 5% ao mês durante 4 meses (juros
+      simples), qual é o montante (M) final, ou seja, capital mais juros?
+    options:
+      - "R$ 2.100,00"
+      - "R$ 2.200,00"
+      - "R$ 2.400,00"
+      - "R$ 2.500,00"
+      - "R$ 2.800,00"
+    correctIndex: 2
+    explanation: >
+      M = C + J — M é o montante, C o capital (R$ 2.000), J o juro calculado (R$ 400, do exercício
+      anterior). M = 2000 + 400 = R$ 2.400,00.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      No regime de juros simples, a principal característica que diferencia esse regime dos juros
+      compostos é que:
+    options:
+      - "O juro de cada período incide sempre sobre o capital inicial, nunca sobre os juros acumulados de períodos anteriores."
+      - "O juro de cada período incide sobre o montante acumulado até aquele momento, incluindo juros anteriores."
+      - "Não existe nenhuma diferença prática entre os dois regimes."
+      - "Juros simples sempre rendem mais que juros compostos, para qualquer prazo."
+      - "Juros simples só podem ser aplicados a taxas anuais."
+    correctIndex: 0
+    explanation: >
+      A marca central dos juros simples é que o juro é sempre calculado sobre o capital
+      **inicial** (fixo), sem "juros sobre juros" — diferente dos juros compostos, onde o juro
+      incide sobre o montante acumulado.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      Um empréstimo de R$ 1.000,00 é feito a juros simples de 2% ao mês. Após quantos meses o juro
+      acumulado será igual a R$ 300,00?
+    options:
+      - "10 meses"
+      - "12 meses"
+      - "15 meses"
+      - "20 meses"
+      - "30 meses"
+    correctIndex: 2
+    explanation: >
+      J = C·i·t → 300 = 1000 × 0,02 × t → 300 = 20t → t = 300 ÷ 20 = 15 meses.
+    source: "Questão autoral, estilo ENEM"
+  - question: >
+      É comum, em contratos de curto prazo (como algumas multas por atraso), o uso de juros
+      simples, enquanto contratos de longo prazo (como financiamentos e poupança) usam
+      predominantemente juros compostos. A principal razão prática para essa diferença é que:
+    options:
+      - "Juros simples são mais simples de calcular manualmente e adequados a prazos curtos, onde a diferença entre os dois regimes é pequena; em prazos longos, juros compostos capitalizam o rendimento de forma mais representativa do custo real do dinheiro no tempo."
+      - "Juros simples são proibidos por lei em qualquer contrato de longo prazo."
+      - "Juros compostos sempre resultam em valores menores que juros simples, para qualquer prazo."
+      - "Não existe nenhuma diferença de aplicação prática entre os dois regimes."
+      - "Juros simples só podem ser usados por instituições públicas."
+    correctIndex: 0
+    explanation: >
+      Em prazos curtos, a diferença entre juros simples e compostos é pequena, favorecendo o uso
+      de juros simples pela simplicidade de cálculo; em prazos longos, a capitalização composta
+      reflete melhor o valor real do dinheiro ao longo do tempo, sendo o padrão de mercado.
+    source: "Questão autoral, estilo ENEM"
+---
+
+## Aula Teórica Completa
+
+Juros são o "aluguel" cobrado pelo uso do dinheiro ao longo do tempo. No regime de **juros
+simples**, o juro de cada período é sempre calculado sobre o **capital inicial** — nunca sobre os
+juros já acumulados de períodos anteriores. É por isso que, nesse regime, o juro cresce sempre na
+mesma quantidade a cada período (crescimento linear).
+
+### A fórmula do juro simples
+
+A fórmula central é **J = C·i·t**, onde **J** é o juro (o valor "extra" gerado pela aplicação), **C**
+é o capital inicial (o valor aplicado ou emprestado), **i** é a taxa de juros (sempre convertida
+para decimal, e na mesma unidade de tempo de "t") e **t** é o tempo da aplicação (na mesma unidade
+da taxa — se a taxa é mensal, o tempo deve estar em meses).
+
+### O montante: capital mais juro
+
+O **montante (M)** é o valor final, somando o capital original com o juro gerado: **M = C + J**.
+Substituindo J pela fórmula anterior, também podemos escrever **M = C(1 + i·t)** — uma forma
+equivalente e útil quando você já quer chegar direto ao valor final.
+
+### Por que o crescimento é linear
+
+Como o juro sempre incide sobre o **mesmo** capital inicial, o valor do juro é **idêntico** em
+cada período (não aumenta nem diminui de um mês para o outro). Isso torna o crescimento do
+montante **linear** ao longo do tempo — diferente dos juros compostos, onde o crescimento é
+exponencial, porque o juro passa a incidir também sobre os juros anteriores.
+
+### Onde os juros simples aparecem na prática
+
+Juros simples costumam aparecer em contratos de **curto prazo**, como multas por atraso de
+pagamento em algumas situações e certos títulos de crédito simples. Em prazos mais longos
+(financiamentos, poupança, cartão de crédito), o mercado financeiro utiliza predominantemente
+**juros compostos**, que refletem de forma mais realista o valor do dinheiro ao longo de períodos
+extensos.
+
+## Tópicos-Chave para Revisão
+
+<div className="topico">
+
+Juros simples incidem sempre sobre o **capital inicial**, nunca sobre juros acumulados — por isso o
+crescimento do montante é **linear** ao longo do tempo.
+
+**Fórmula do juro: J = C·i·t** — J é o juro, C o capital inicial, i a taxa (em decimal), t o tempo,
+sempre na mesma unidade da taxa.
+
+**Fórmula do montante: M = C + J**, equivalente a **M = C(1 + i·t)** — M é o valor final somando
+capital e juro.
+
+A taxa **i** e o tempo **t** precisam estar sempre na **mesma unidade** (taxa mensal exige tempo em
+meses) — erro de unidade é a pegadinha mais comum do tema.
+
+Juros simples são mais usados em contratos de **curto prazo**; juros compostos dominam contratos de
+**longo prazo**, por refletirem melhor o valor do dinheiro no tempo.
+
+</div>
